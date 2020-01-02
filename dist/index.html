@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <script src="main.js"></script>
+    <title>Gameboard</title>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('document is ready. I can start now');
+        jg = new JitsiGame;
+        jg.startMeeting('#meet');
+        jg.testComponent('#webpack');
+    });
+  </script>
+</head>
+<body>
+    <div id="meet"></div>
+    <div id="webpack">TESTING</div>
+</body>
+</html>
