@@ -13,11 +13,14 @@
         jg = new JitsiGame;
         jg.startMeeting('#meet');
         jg.testComponent('#webpack');
+        jg.toggleAudio('#audio')
+        jg.toggleVideo('#video')
     });
   </script>
 </head>
 <body>
-    <div id="meet"></div>
-    <div id="webpack">TESTING</div>
+    <button id="video">Video</button>
+    <button id="audio">Audio</button>
+    <div id="webpack">TESTING</div>  
 </body>
 </html>
