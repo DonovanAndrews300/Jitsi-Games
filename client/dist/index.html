@@ -8,6 +8,21 @@
     <script src="main.js"></script>
     <title>Gameboard</title>
     <script>
+      const url ='http://localhost:3000';
+      function getData(){
+        fetch(url) 
+.then((data) => {
+    return data.json();
+})
+.then((resData)=>{
+  console.log(resData)
+})
+.catch((err) => {
+    console.log(err.message)
+});
+      } 
+
+      getData();
       document.addEventListener('DOMContentLoaded', function() {
         console.log('document is ready. I can start now');
         jg = new JitsiGame;
