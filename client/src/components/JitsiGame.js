@@ -11,6 +11,20 @@ class JitsiGame {
     constructor() {
         console.log('constructing now');
     }
+
+    getData(url) {
+        fetch(url) 
+    .then((data) => {
+    return data.json();
+    })
+    .then((resData)=>{
+    console.log(resData)
+    })
+    .catch((err) => {
+    console.log(err.message)
+    });
+      } 
+
     startMeeting(selector) {
         const domain = 'meet.jit.si';
         const options = {
