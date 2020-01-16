@@ -16,7 +16,8 @@ class JitsiGame {
         fetch(url) 
     .then((data) => {
     return data.json();
-    })
+    }) 
+    
     .then((resData)=>{
     console.log(resData)
     })
