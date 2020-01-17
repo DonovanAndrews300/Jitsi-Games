@@ -12,7 +12,7 @@
       document.addEventListener('DOMContentLoaded', function() {
         console.log('document is ready. I can start now');
         jg = new JitsiGame(config);
-        jg.getData(url);
+        jg.listGames()
         jg.startMeeting('#meet');
         jg.testComponent('#webpack');
     });

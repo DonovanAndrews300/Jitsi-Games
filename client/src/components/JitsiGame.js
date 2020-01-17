@@ -7,9 +7,9 @@ function component() {
   return element;
 }
 
-class DataClient() {
+class DataClient {
     constructor(config) {
-      this.config = config
+      this.config = config;
     }
 
     getGames() {
