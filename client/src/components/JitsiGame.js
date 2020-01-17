@@ -7,10 +7,50 @@ function component() {
   return element;
 }
 
-class JitsiGame {
-    constructor() {
-        console.log('constructing now');
+class DataClient() {
+    constructor(config) {
+      this.config = config
     }
+
+    getGames() {
+      return this.getData(config.gameUrl);
+    }
+
+    getAdvertisers() {
+      return this.getData(config.adUrl);
+    }
+  
+  
+    getData(url) {
+        return fetch(url) 
+    .then((data) => {
+    return data.json();
+    }) 
+    
+    .then((resData)=>{
+    console.log(resData)
+          return resData;
+    })
+    .catch((err) => {
+    console.log(err.message)
+    });
+      }  
+
+}
+
+class JitsiGame {
+    constructor(config) {
+      this.config = config;
+        console.log('constructing now');
+      this._dataClient = new DataClient(this.config);
+    }
+
+  
+    listGames() {
+      return this._dataClient.getGames();
+    }
+ 
+
     startMeeting(selector) {
         const domain = 'meet.jit.si';
         const options = {
