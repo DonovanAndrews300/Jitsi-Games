@@ -12,7 +12,6 @@
       document.addEventListener('DOMContentLoaded', function() {
         console.log('document is ready. I can start now');
         jg = new JitsiGame(config);
-        jg.listGames()
         jg.startMeeting('#meet');
         jg.testComponent('#webpack');
     });
@@ -21,5 +20,6 @@
 <body>
     <div id="meet"></div>
     <div id="webpack">TESTING</div>
+    <button onclick=jg.listGames()>Get games</button>
 </body>
 </html>

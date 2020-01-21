@@ -19,24 +19,45 @@ class DataClient {
     getAdvertisers() {
       return this.getData(config.adUrl);
     }
-  
-  
+
     getData(url) {
         return fetch(url) 
-    .then((data) => {
-    return data.json();
+    .then((res) => {
+    return res.json();
     }) 
     
-    .then((resData)=>{
-    console.log(resData)
-          return resData;
+    .then((data)=>{
+    console.log(data)
+          return data;
     })
     .catch((err) => {
     console.log(err.message)
     });
-      }  
+      }
+
+    postGameURL(body) {
+      return this.postData(config.gameUrl,body)
+    }
+    postData(url,body){
+      return fetch(url, {
+            method: 'POST',
+            headers : new Headers(),
+            body:JSON.stringify({body:body})
+        })
+        .then((res) => {
+          console.log(res.body)
+          return res;
+        })
+        .then((data) =>{
+          console.log(data.body)
+          return data
+        })
+        .catch((err)=>console.log(err))
+    }
 
 }
+
+
 
 class JitsiGame {
     constructor(config) {
@@ -47,10 +68,17 @@ class JitsiGame {
 
   
     listGames() {
-      return this._dataClient.getGames();
+      console.log(this._dataClient.getGames()) ;
     }
- 
 
+    saveGameUrl(body){
+      this._dataClient.postGameURL()
+    }
+
+    logUrl(url){
+      console.log(url);
+    }
+    
     startMeeting(selector) {
         const domain = 'meet.jit.si';
         const options = {
@@ -60,8 +88,9 @@ class JitsiGame {
             parentNode: document.querySelector(selector)
         };
         const api = new JitsiMeetExternalAPI(domain, options);
+        this.saveGameUrl(api._url)
     }
-
+    
     testComponent(selector) {
         document.querySelector(selector).appendChild(component());
     }
