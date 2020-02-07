@@ -1,99 +1,92 @@
-import _ from 'lodash';
+import _ from "lodash";
 function component() {
-  const element = document.createElement('div');
+  const element = document.createElement("div");
 
-  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+  element.innerHTML = _.join(["Hello", "webpack"], " ");
 
   return element;
 }
 
 class DataClient {
-    constructor(config) {
-      this.config = config;
-    }
+  constructor(config) {
+    this.config = config;
+  }
 
-    getGames() {
-      return this.getData(config.gameUrl);
-    }
+  getGames() {
+    return this.getData(config.gameUrl);
+  }
 
-    getAdvertisers() {
-      return this.getData(config.adUrl);
-    }
+  postGame() {
+    const test = "test";
+    return this.postData(config.gameUrl, test); 
+    //returns postData from url
+  }
 
-    getData(url) {
-        return fetch(url) 
-    .then((res) => {
-    return res.json();
-    }) 
-    
-    .then((data)=>{
-    console.log(data)
-          return data;
+  getData(url) {
+    return fetch(url)
+      .then(data => {
+        return data.json();
+      })
+      .then(resData => {
+        console.log(resData);
+        return resData;
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  }
+
+  postData(url,data) {
+    //sends post request to a passed url
+    return fetch(url,{
+      method: "post",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({data}),
     })
-    .catch((err) => {
-    console.log(err.message)
-    });
-      }
-
-    postGameURL(body) {
-      return this.postData(config.gameUrl,body)
-    }
-    postData(url,body){
-      return fetch(url, {
-            method: 'POST',
-            headers : new Headers(),
-            body:JSON.stringify({body:body})
-        })
-        .then((res) => {
-          console.log(res.body)
-          return res;
-        })
-        .then((data) =>{
-          console.log(data.body)
-          return data
-        })
-        .catch((err)=>console.log(err))
-    }
-
+      .then(data => {
+        return data.json();
+      })
+      .then(resData => {
+        console.log(resData);
+        return resData;
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  }
 }
 
-
-
 class JitsiGame {
-    constructor(config) {
-      this.config = config;
-        console.log('constructing now');
-      this._dataClient = new DataClient(this.config);
-    }
+  constructor(config) {
+    this.config = config;
+    console.log("constructing now");
+    this._dataClient = new DataClient(this.config);
+  }
 
-  
-    listGames() {
-      console.log(this._dataClient.getGames()) ;
-    }
+  saveGame(data){
+    return this._dataClient.postGame(data);
+  }
+  listGames(data) {
+    //make return list of strings from the db
+    return this._dataClient.getGames();
+  }
 
-    saveGameUrl(body){
-      this._dataClient.postGameURL()
-    }
+  startMeeting(selector) {
+    const domain = "meet.jit.si";
+    const options = {
+      roomName: "JitsiMeetAPIExample",
+      width: 700,
+      height: 700,
+      parentNode: document.querySelector(selector)
+    };
+    const api = new JitsiMeetExternalAPI(domain, options);
+  }
 
-    logUrl(url){
-      console.log(url);
-    }
-    
-    startMeeting(selector) {
-        const domain = 'meet.jit.si';
-        const options = {
-            roomName: 'JitsiMeetAPIExample',
-            width: 700,
-            height: 700,
-            parentNode: document.querySelector(selector)
-        };
-        const api = new JitsiMeetExternalAPI(domain, options);
-        this.saveGameUrl(api._url)
-    }
-    
-    testComponent(selector) {
-        document.querySelector(selector).appendChild(component());
-    }
+  testComponent(selector) {
+    document.querySelector(selector).appendChild(component());
+  }
 }
 
 export default JitsiGame;
