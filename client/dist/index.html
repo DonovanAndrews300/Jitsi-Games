@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src='https://meet.jit.si/external_api.js'></script>
     <script src="main.js"></script>
+    <script src="config.js"></script>
     <title>Gameboard</title>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         console.log('document is ready. I can start now');
-        jg = new JitsiGame;
+        jg = new JitsiGame(config);
         jg.startMeeting('#meet');
         jg.testComponent('#webpack');
     });
@@ -19,5 +20,7 @@
 <body>
     <div id="meet"></div>
     <div id="webpack">TESTING</div>
+    <button onclick=jg.listGames()>Get games</button>
+    <button onclick=jg.saveGame()>Save game</button>
 </body>
 </html>
