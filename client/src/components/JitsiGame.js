@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { generateRoomWithoutSeparator } from "../../js-utils/random/roomNameGenerator"
+import { generateRoomWithoutSeparator } from "js-utils/random/roomNameGenerator"
 function component() {
   const element = document.createElement("div");
 
@@ -67,19 +67,13 @@ class JitsiGame {
   }
 
   newGame(url){
-    //Have this run the rng function and save the string to the data
-    window.open(url);
-    return this._dataClient.postGame(url);
-  }
-
-  logUrl(url){
-    console.log(url)
+    return this._dataClient.postGame()
+    //Have this run the rng function and save the string to the db
   }
 
   gameList(data) {
-
     //make return list of  from the db
-    //this function will make a ul of anchors using 
+    //this function will make a ul of links using saved urls from db 
     return this._dataClient.getGames();
   }
 
@@ -95,6 +89,7 @@ class JitsiGame {
     const api = new JitsiMeetExternalAPI(domain, options);
     const url = api._url;
     //Figure out how to save this to the Datbase and you win 
+    this.logUrl();
   }
 
   testComponent(selector) {
