@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { generateRoomWithoutSeparator } from "../../js-utils/random/roomNameGenerator"
 function component() {
   const element = document.createElement("div");
 
@@ -65,23 +66,36 @@ class JitsiGame {
     this._dataClient = new DataClient(this.config);
   }
 
-  saveGame(data){
-    return this._dataClient.postGame(data);
+  newGame(url){
+    //Have this run the rng function and save the string to the data
+    window.open(url);
+    return this._dataClient.postGame(url);
   }
-  listGames(data) {
-    //make return list of strings from the db
+
+  logUrl(url){
+    console.log(url)
+  }
+
+  gameList(data) {
+
+    //make return list of  from the db
+    //this function will make a ul of anchors using 
     return this._dataClient.getGames();
   }
 
   startMeeting(selector) {
     const domain = "meet.jit.si";
+    const randomName = generateRoomWithoutSeparator();
     const options = {
-      roomName: "JitsiMeetAPIExample",
+      roomName: randomName,
       width: 700,
       height: 700,
       parentNode: document.querySelector(selector)
     };
     const api = new JitsiMeetExternalAPI(domain, options);
+    const url = api._url;
+    //Figure out how to save this to the Datbase and you win 
+    this.logUrl();
   }
 
   testComponent(selector) {
