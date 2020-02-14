@@ -95,7 +95,6 @@ class JitsiGame {
     const api = new JitsiMeetExternalAPI(domain, options);
     const url = api._url;
     //Figure out how to save this to the Datbase and you win 
-    this.logUrl();
   }
 
   testComponent(selector) {
