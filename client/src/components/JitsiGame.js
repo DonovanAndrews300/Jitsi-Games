@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { generateRoomWithoutSeparator } from "js-utils/random/roomNameGenerator"
+import { generateRoomWithoutSeparator } from "js-utils/random/roomNameGenerator";
 function component() {
   const element = document.createElement("div");
 
@@ -19,7 +19,7 @@ class DataClient {
 
   postGame() {
     const test = "test";
-    return this.postData(config.gameUrl, test); 
+    return this.postData(config.gameUrl, test);
     //returns postData from url
   }
 
@@ -37,14 +37,14 @@ class DataClient {
       });
   }
 
-  postData(url,data) {
+  postData(url, data) {
     //sends post request to a passed url
-    return fetch(url,{
+    return fetch(url, {
       method: "post",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({data}),
+      body: JSON.stringify({ data })
     })
       .then(data => {
         return data.json();
@@ -66,30 +66,33 @@ class JitsiGame {
     this._dataClient = new DataClient(this.config);
   }
 
-  newGame(url){
-    return this._dataClient.postGame()
-    //Have this run the rng function and save the string to the db
+  newGame(selector) {
+    //This will close the current iframe,open a new one using a random string, then saves that string to the db.
   }
 
   gameList(data) {
     //make return list of  from the db
-    //this function will make a ul of links using saved urls from db 
+    //this function will make a ul of links using saved urls from db
     return this._dataClient.getGames();
   }
 
-  startMeeting(selector) {
+  gameRoomLobby(selector){
+    const lobby = "lobby";
+    this.startMeeting(lobby,selector)
+  }
+
+  startMeeting(roomName, selector) {
     const domain = "meet.jit.si";
-    const randomName = generateRoomWithoutSeparator();
     const options = {
-      roomName: randomName,
+      roomName: roomName,
       width: 700,
       height: 700,
       parentNode: document.querySelector(selector)
     };
+
+
     const api = new JitsiMeetExternalAPI(domain, options);
-    const url = api._url;
-    //Figure out how to save this to the Datbase and you win 
-    this.logUrl();
+    console.log(api._url)
   }
 
   testComponent(selector) {
