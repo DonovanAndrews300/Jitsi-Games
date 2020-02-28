@@ -6,8 +6,10 @@
   "scripts": {
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx webpack-dev-server --config webpack.config.js --content-base dist/",
-    "build": "npx webpack --config webpack.config.js"
+    "dev": "npx webpack-dev-server --config client/webpack.config.js --content-base client/dist/",
+    "build": "npx webpack --config webpack.config.js",
+    "start": "node server/server.js",
+    "server": "node server/server.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
+    "babel": "^6.23.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
     "eslint": "^6.8.0",
@@ -34,6 +37,12 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "redis": "^2.8.0",
+    "flowtype": "^2.0.0",
     "js-utils": "github:jitsi/js-utils",
     "lodash": "^4.17.15"
   }

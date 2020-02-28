@@ -3,3 +3,5 @@ const config = {
     adUrl: 'http://localhost:3000/',
     url: 'http://localhost:3000/'
 };
+
+module.exports = config;
