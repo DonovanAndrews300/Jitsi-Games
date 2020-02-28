@@ -64,14 +64,20 @@ class JitsiGame {
     this.config = config;
     console.log("constructing now");
     this._dataClient = new DataClient(this.config);
+    this._api = false;
   }
 
-  newGame(selector) {
+  newGame(element) {
     //This will close the current iframe,open a new one using a random string, then saves that string to the db.
+    this._api.executeCommand('hangup');
+    //const randomRoomName = generateRoomWithoutSeparator();
+    //this.startMeeting(randomRoomName,selector)
+    //console.log(randomRoomName)
+    //return this._dataClient.postGame(randomRoomName);
   }
 
   gameList(data) {
-    //make return list of  from the db
+    //make this return list of roomnames from the db
     //this function will make a ul of links using saved urls from db
     return this._dataClient.getGames();
   }
@@ -91,8 +97,8 @@ class JitsiGame {
     };
 
 
-    const api = new JitsiMeetExternalAPI(domain, options);
-    console.log(api._url)
+    this._api = new JitsiMeetExternalAPI(domain, options);
+    console.log(this._api._url)
   }
 
   testComponent(selector) {
