@@ -12,7 +12,7 @@
       document.addEventListener('DOMContentLoaded', function() {
         console.log('document is ready. I can start now');
         jg = new JitsiGame(config);
-        jg.startMeeting('#meet');
+        jg.gameRoomLobby('#meet');
         jg.testComponent('#webpack');
     });
   </script>
@@ -20,7 +20,8 @@
 <body>
     <div id="meet"></div>
     <div id="webpack">TESTING</div>
-    <button onclick=jg.listGames()>Get games</button>
-    <button onclick=jg.saveGame()>Save game</button>
+    <div id="gamelist"></div>
+    <button onclick=jg.newGame()>New Game</button>
+    <button onclick=jg.gameList()>Get games</button>
 </body>
 </html>
