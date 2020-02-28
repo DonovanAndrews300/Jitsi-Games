@@ -1,0 +1,20 @@
+{
+    "env": {
+        "node": true
+    },
+    "extends": [
+        "eslint-config-jitsi"
+    ],
+    "overrides": [
+        {
+            "files": [
+                "**/*.test.js"
+            ],
+            "env": {
+                "jest": true,
+                "node": true
+            }
+        }
+    ]
+}
+
