@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { generateRoomWithoutSeparator } from "js-utils/random/roomNameGenerator";
 function component() {
   const element = document.createElement("div");
 
@@ -18,7 +19,7 @@ class DataClient {
 
   postGame() {
     const test = "test";
-    return this.postData(config.gameUrl, test); 
+    return this.postData(config.gameUrl, test);
     //returns postData from url
   }
 
@@ -36,14 +37,14 @@ class DataClient {
       });
   }
 
-  postData(url,data) {
+  postData(url, data) {
     //sends post request to a passed url
-    return fetch(url,{
+    return fetch(url, {
       method: "post",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({data}),
+      body: JSON.stringify({ data })
     })
       .then(data => {
         return data.json();
@@ -63,25 +64,41 @@ class JitsiGame {
     this.config = config;
     console.log("constructing now");
     this._dataClient = new DataClient(this.config);
+    this._api = false;
   }
 
-  saveGame(data){
-    return this._dataClient.postGame(data);
+  newGame(element) {
+    //This will close the current iframe,open a new one using a random string, then saves that string to the db.
+    this._api.executeCommand('hangup');
+    //const randomRoomName = generateRoomWithoutSeparator();
+    //this.startMeeting(randomRoomName,selector)
+    //console.log(randomRoomName)
+    //return this._dataClient.postGame(randomRoomName);
   }
-  listGames(data) {
-    //make return list of strings from the db
+
+  gameList(data) {
+    //make this return list of roomnames from the db
+    //this function will make a ul of links using saved urls from db
     return this._dataClient.getGames();
   }
 
-  startMeeting(selector) {
+  gameRoomLobby(selector){
+    const lobby = "lobby";
+    this.startMeeting(lobby,selector)
+  }
+
+  startMeeting(roomName, selector) {
     const domain = "meet.jit.si";
     const options = {
-      roomName: "JitsiMeetAPIExample",
+      roomName: roomName,
       width: 700,
       height: 700,
       parentNode: document.querySelector(selector)
     };
-    const api = new JitsiMeetExternalAPI(domain, options);
+
+
+    this._api = new JitsiMeetExternalAPI(domain, options);
+    console.log(this._api._url)
   }
 
   testComponent(selector) {
