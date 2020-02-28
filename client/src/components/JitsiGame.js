@@ -1,109 +1,112 @@
-import _ from "lodash";
-import { generateRoomWithoutSeparator } from "js-utils/random/roomNameGenerator";
+import _ from 'lodash';
+import { generateRoomWithoutSeparator } from 'js-utils/random/roomNameGenerator';
 function component() {
-  const element = document.createElement("div");
+    const element = document.createElement('div');
 
-  element.innerHTML = _.join(["Hello", "webpack"], " ");
+    element.innerHTML = _.join([ 'Hello', 'webpack' ], ' ');
 
-  return element;
+    return element;
 }
 
 class DataClient {
-  constructor(config) {
-    this.config = config;
-  }
+    constructor(config) {
+        this.config = config;
+    }
 
-  getGames() {
-    return this.getData(config.gameUrl);
-  }
+    getGames() {
+        return this.getData(config.gameUrl);
+    }
 
-  postGame() {
-    const test = "test";
-    return this.postData(config.gameUrl, test);
-    //returns postData from url
-  }
+    postGame() {
+        const test = 'test';
 
-  getData(url) {
-    return fetch(url)
-      .then(data => {
-        return data.json();
-      })
+
+        return this.postData(config.gameUrl, test);
+
+    // returns postData from url
+    }
+
+    getData(url) {
+        return fetch(url)
+      .then(data => data.json())
       .then(resData => {
-        console.log(resData);
-        return resData;
+          console.log(resData);
+
+          return resData;
       })
       .catch(err => {
-        console.log(err.message);
+          console.log(err.message);
       });
-  }
+    }
 
-  postData(url, data) {
-    //sends post request to a passed url
-    return fetch(url, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ data })
-    })
-      .then(data => {
-        return data.json();
-      })
+    postData(url, data) {
+    // sends post request to a passed url
+        return fetch(url, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+        })
+      .then(data => data.json())
       .then(resData => {
-        console.log(resData);
-        return resData;
+          console.log(resData);
+
+          return resData;
       })
       .catch(err => {
-        console.log(err.message);
+          console.log(err.message);
       });
-  }
+    }
 }
 
 class JitsiGame {
-  constructor(config) {
-    this.config = config;
-    console.log("constructing now");
-    this._dataClient = new DataClient(this.config);
-    this._api = false;
-  }
+    constructor(config) {
+        this.config = config;
+        console.log('constructing now');
+        this._dataClient = new DataClient(this.config);
+        this._api = false;
+    }
 
-  newGame(element) {
-    //This will close the current iframe,open a new one using a random string, then saves that string to the db.
-    this._api.executeCommand('hangup');
-    //const randomRoomName = generateRoomWithoutSeparator();
-    //this.startMeeting(randomRoomName,selector)
-    //console.log(randomRoomName)
-    //return this._dataClient.postGame(randomRoomName);
-  }
+    newGame(element) {
+    // This will close the current iframe,open a new one using a random string, then saves that string to the db.
+        this._api.executeCommand('hangup');
 
-  gameList(data) {
-    //make this return list of roomnames from the db
-    //this function will make a ul of links using saved urls from db
-    return this._dataClient.getGames();
-  }
+    // const randomRoomName = generateRoomWithoutSeparator();
+    // this.startMeeting(randomRoomName,selector)
+    // console.log(randomRoomName)
+    // return this._dataClient.postGame(randomRoomName);
+    }
 
-  gameRoomLobby(selector){
-    const lobby = "lobby";
-    this.startMeeting(lobby,selector)
-  }
+    gameList(data) {
+    // make this return list of roomnames from the db
+    // this function will make a ul of links using saved urls from db
+        return this._dataClient.getGames();
+    }
 
-  startMeeting(roomName, selector) {
-    const domain = "meet.jit.si";
-    const options = {
-      roomName: roomName,
-      width: 700,
-      height: 700,
-      parentNode: document.querySelector(selector)
-    };
+    gameRoomLobby(selector) {
+        const lobby = 'lobby';
+
+        this.startMeeting(lobby, selector);
+    }
+
+    startMeeting(roomName, selector) {
+        const domain = 'meet.jit.si';
+        const options = {
+            roomName,
+            width: 700,
+            height: 700,
+            parentNode: document.querySelector(selector)
+        };
 
 
-    this._api = new JitsiMeetExternalAPI(domain, options);
-    console.log(this._api._url)
-  }
+        this._api = new JitsiMeetExternalAPI(domain, options);
+        console.log(this._api._url);
+    }
 
-  testComponent(selector) {
-    document.querySelector(selector).appendChild(component());
-  }
+    testComponent(selector) {
+        document.querySelector(selector).appendChild(component());
+    }
 }
 
 export default JitsiGame;
