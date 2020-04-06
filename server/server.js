@@ -17,7 +17,7 @@ app.use(cors());
 app.get('/', (req, res) => {
     // gets from db
     client.lrange('domains', 0, -1, (err, reply) => {
-        res.json(reply.toString());
+        res.json(reply);
     });
     console.log(res.body);
 });
