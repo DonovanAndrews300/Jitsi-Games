@@ -15,7 +15,7 @@
      *
      * @param {function} clickedCellEvent
      */
-    handleCellClick = clickedCellEvent => {
+    handleCellClick(clickedCellEvent) {
         // Will save the clcicked element in a variable for use
         const clickedCell = clickedCellEvent.target;
 
@@ -43,7 +43,7 @@
      * @param  {function} clickedCell
      * @param  {function} clickedCellIndex
      */
-    handleGameStateUpdate = (clickedCell, clickedCellIndex) => {
+    handleGameStateUpdate(clickedCell, clickedCellIndex) {
         // With this handler we will update the game state and the UI
         this.gameState[clickedCellIndex] = this.currentPlayer;
         clickedCell.innerHTML = this.currentPlayer;
@@ -52,14 +52,14 @@
     /**
      * Changes the player turn
      */
-    handlePlayerChange = () => {
+    handlePlayerChange() {
         this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
     }
 
     /**
      * Check to see if the game has ended after each turn
      */
-    handleResult = () => {
+    handleResult() {
         let roundWon = false;
         const roundDraw = !this.gameState.includes('');
         const winConditions = [
@@ -80,7 +80,7 @@
             const c = this.gameState[winCondition[2]];
 
             if (a === '' || b === '' || c === '') {
-                continue;
+                // do nothing
             }
 
             if (a === b && b === c) {
@@ -108,7 +108,7 @@
     /**
      * Restarts the game
      */
-    handleRestartGame = () => {
+    handleRestartGame() {
         this.gameActive = true;
         this.currentPlayer = 'X';
         this.gameState = [ '', '', '', '', '', '', '', '', '' ];

@@ -1,12 +1,15 @@
 const path = require('path');
 
 module.exports = {
-    entry: './client/src/index.js',
+    entry: {
+        'JitsiGame': './client/src/index.js',
+        'TicTacToe': './client/src/tictactoe.js'
+    },
     output: {
-        filename: 'main.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
         libraryTarget: 'var',
-        library: 'JitsiGame'
+        library: '[name]'
     },
     module: {
         rules: [
