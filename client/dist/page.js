@@ -46,9 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
     jg = new JitsiGame(config);
     ttt = new TicTacToe()
     jg.gameRoomLobby('#meet');
-    jg.testComponent('#webpack');
-    document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', ttt.handleCellClick ));
-    document.querySelector('.game--restart').addEventListener('click', ttt.handelRestartGame);
+
+    //    jg.testComponent('#webpack');
+    document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', function(event) { ttt.handleCellClick(event); }));
+    document.querySelector('.game--restart').addEventListener('click', function(event) { ttt.handleRestartGame(); });
     document.getElementById('btnNewGame').onclick = handleNewGame;
     
 });
