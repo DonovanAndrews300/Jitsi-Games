@@ -43,13 +43,19 @@ function handleNewGame(selector) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     console.log('document is ready. I can start now');
+    const game1 = [ '', '', '', '', '', '', '', '', '' ];
+
     jg = new JitsiGame(config);
-    ttt = new TicTacToe()
+    ttt = new TicTacToe(game1);
     jg.gameRoomLobby('#meet');
 
     //    jg.testComponent('#webpack');
-    document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', function(event) { ttt.handleCellClick(event); }));
-    document.querySelector('.game--restart').addEventListener('click', function(event) { ttt.handleRestartGame(); });
+    document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', event => {
+        ttt.handleCellClick(event);
+    }));
+    document.querySelector('.game--restart').addEventListener('click', event => {
+        ttt.handleRestartGame();
+    });
     document.getElementById('btnNewGame').onclick = handleNewGame;
-    
+
 });

@@ -4,8 +4,8 @@
     /**
      * Properties for each game
      */
-    constructor() {
-        this.gameState = [ '', '', '', '', '', '', '', '', '' ];
+    constructor(gameState) {
+        this.gameState = gameState;
         this.currentPlayer = 'X';
         this.gameActive = true;
         console.log('constructing now');
@@ -36,6 +36,7 @@
 
         this.handleGameStateUpdate(clickedCell, clickedCellIndex);
         this.handleResult();
+        console.log(this.gameState);
     }
 
     /**
@@ -73,21 +74,22 @@
             [ 2, 4, 6 ]
         ];
 
-        for (let i = 0; i <= 7; i++) {
-            const winCondition = winConditions[i];
+        winConditions.forEach(winCondition => {
             const a = this.gameState[winCondition[0]];
             const b = this.gameState[winCondition[1]];
             const c = this.gameState[winCondition[2]];
 
-            if (a === '' || b === '' || c === '') {
-                // do nothing
-            }
 
             if (a === b && b === c) {
-                roundWon = true;
-                break;
+
+                if (a !== '' || b !== '' || c !== '') {
+                    roundWon = true;
+
+                }
             }
-        }
+        });
+
+
         if (roundWon) {
             this.gameActive = false;
 
