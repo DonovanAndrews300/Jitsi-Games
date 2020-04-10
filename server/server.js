@@ -32,6 +32,23 @@ app.post('/', (req, res) => {
     });
 });
 
+app.get('/gameStates', (req, res) => {
+    // gets from db
+    client.get('gameStates'+req.params.roomName, (err, reply) => {
+        res.json(reply);
+    });
+    console.log(res.body);
+});
+
+app.post('/gameState', (req, res) => {
+    const gameData = req.body.data;
+
+    client.set('gameStates.'+ gameData.roomName, gameData.gameState, (err, reply) => {
+        console.log(reply);
+        res.json(reply);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Running on port ${port}`);
 });

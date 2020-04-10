@@ -45,8 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('document is ready. I can start now');
     const game1 = [ '', '', '', '', '', '', '', '', '' ];
 
+    let playerSession = window.localStorage.getItem('JitsiGameSession');
+
+    if (!playerSession) {
+        playerSession = ';lkajskdfj';
+        window.localStorage.setItem('JitsiGameSession', playerSession);
+    }
+
     jg = new JitsiGame(config);
-    ttt = new TicTacToe(game1);
+    ttt = new TicTacToe(jg, playerSession);
     jg.gameRoomLobby('#meet');
 
     //    jg.testComponent('#webpack');

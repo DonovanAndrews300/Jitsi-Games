@@ -1,14 +1,41 @@
 /**
-     *Tic Tac Toe
-   */class TicTacToe {
+  * Tic Tac Toe
+*/
+class TicTacToe {
     /**
      * Properties for each game
      */
-    constructor(gameState) {
-        this.gameState = gameState;
+    constructor(JitsiGame, playerSession) {
+        this.playerSession = playerSession;
+        this.JitsiGame = JitsiGame;
+        this.gameState = [ '', '', '', '', '', '', '', '', '' ];
         this.currentPlayer = 'X';
         this.gameActive = true;
         console.log('constructing now');
+        console.log("Game state", this.gameState);
+    }
+
+    /**
+     *
+     */
+    initGameState() {
+        this.gameState = this.loadGameState();
+        if (!this.gameState) {
+            this.gameState = {
+                game: [ '', '', '', '', '', '', '', '', '' ],
+                players: {},
+                turn: this.playerSession
+            };
+            this.gameState.players[this.playerSession] = 'X';
+            this.saveGameState();
+        }
+    }
+
+    /**
+     *
+     */
+    loadGameState() {
+        this.gameState = this.JitsiGame.retrieveGameState();
     }
 
     /**
@@ -25,6 +52,8 @@
             clickedCell.getAttribute('data-cell-index')
         );
 
+        console.log(this.gameState, clickedCellIndex);
+
         // Checks to see if the cell is played already or if the game is over
         // If so the click is ignored
         if (this.gameState[clickedCellIndex] !== '' || !this.gameActive) {
@@ -36,7 +65,6 @@
 
         this.handleGameStateUpdate(clickedCell, clickedCellIndex);
         this.handleResult();
-        console.log(this.gameState);
     }
 
     /**
@@ -48,6 +76,7 @@
         // With this handler we will update the game state and the UI
         this.gameState[clickedCellIndex] = this.currentPlayer;
         clickedCell.innerHTML = this.currentPlayer;
+        this.JitsiGame.saveGameState(this.gameState);
     }
 
     /**

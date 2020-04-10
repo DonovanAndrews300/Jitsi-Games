@@ -43,6 +43,21 @@ class DataClient {
     }
 
     /**
+    * posts a string to backend server
+    * @param {string} string
+    */
+    postGameState(roomName, gameState) {
+        return this.postData(this.config.gameStateUrl, { roomName: roomName, gameState: gameState });
+    }
+
+    /**
+     * gets game list from backend server
+     */
+    getGamestate(roomName) {
+        return this.getData(`${this.config.gameUrl}?roomName=${roomName}`);
+    }
+
+    /**
    * helper function for GET requests
    * @param {string} url
    */
@@ -101,6 +116,23 @@ class JitsiGame {
     }
 
     /**
+     *
+     * @param {*} gameState
+     */
+    saveGameState(gameState) {
+        const result = this._dataClient.postGameState(this._roomName, gameState);
+
+        return result;
+    }
+
+    /**
+     *
+     */
+    retrieveGameState() {
+        return this._dataClient.getGameState(this._roomName);
+    }
+
+    /**
    * Generates a new game window
    * @param {string} selector
    */
@@ -110,6 +142,7 @@ class JitsiGame {
             this._api.dispose();
             const randomRoomName = generateRoomWithoutSeparator();
 
+            this._roomName = randomRoomName;
             this.startMeeting(randomRoomName, selector);
             const result = this._dataClient.postGame(randomRoomName);
 
