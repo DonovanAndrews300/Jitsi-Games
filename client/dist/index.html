@@ -35,6 +35,9 @@ line-height: 100px;
     <div style="display:flex; flex-direction:row">
       <div id="meet"></div>
       <div id="gamelist"></div>
+      <div class="game-navigation">
+        <button class="game--restart">Restart Game</button>
+      </div>
       <div class="game--container">
         <div data-cell-index="0" class="cell"></div>
         <div data-cell-index="1" class="cell"></div>
@@ -48,8 +51,12 @@ line-height: 100px;
     </div>
 
     </div> 
-    <button class="game--restart">Restart Game</button>
     <button id="btnNewGame">New Game</button>
+    <select>
+      <option value="">--Select a Game--</option>
+      <option value="TicTacToe">Tic Tac Toe</option>
+      <option value="HangMan">Hang Person</option>
+    </select>
     <button onclick="jg.gameList('#gamelist')">Refresh Gamelist</button>
   </body>
 </html>
