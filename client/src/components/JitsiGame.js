@@ -83,6 +83,24 @@ class DataClient {
           console.log(err.message);
       });
     }
+
+    /**
+     * posts a string to the backend server
+     * @param  {string} roomName
+     * @param  {string} gameState
+     */
+    postGameState(roomName, gameState) {
+        return this.postData(this.config.gameState, { roomName,
+            gameState });
+    }
+
+    /**
+     * gets a list of gamestates from the backend server
+     * @param  {string} roomName
+     */
+    getGameState(roomName) {
+        return this.getData(`${this.config.gameUrl}?roomName=${roomName}`);
+    }
 }
 
 /**
@@ -94,10 +112,12 @@ class JitsiGame {
    * @param {object} config
    */
     constructor(config) {
+        // Need this._roomname
         this.config = config;
         console.log('constructing now');
         this._dataClient = new DataClient(this.config);
         this._api = false;
+        this._roomName = false;
     }
 
     /**
@@ -108,10 +128,10 @@ class JitsiGame {
         return new Promise((resolve, reject) => {
             this._api.executeCommand('hangup');
             this._api.dispose();
-            const randomRoomName = generateRoomWithoutSeparator();
+            this._roomName = generateRoomWithoutSeparator();
 
-            this.startMeeting(randomRoomName, selector);
-            const result = this._dataClient.postGame(randomRoomName);
+            this.startMeeting(this._roomName, selector);
+            const result = this._dataClient.postGame(this._roomName);
 
             if (result) {
                 resolve(result);
@@ -120,7 +140,21 @@ class JitsiGame {
             }
         });
 
-    // return this._dataClient.postGame(randomRoomName);
+    }
+
+
+    /**
+     * Handles the player session in local storage
+     */
+    handlePlayerSession() {
+        let playerSession = window.localStorage.getItem('JitsiGameSession');
+
+        if (!playerSession) {
+            playerSession = 'ifeeuiwqfhe';
+            window.localStorage.setItem('JitsiGameSession', playerSession);
+        }
+
+        return playerSession;
     }
 
     /**
@@ -134,13 +168,45 @@ class JitsiGame {
     }
 
     /**
-   * Generates a meeting and places it in the DOM at selector
+     * saves the gamestate object to the database
+     * @param  {} gameState
+     */
+    saveGameState(gameState) {
+        return this._dataClient.postGameState(this._roomName, gameState);
+    }
+
+    /**
+     * returns gamestate object
+     */
+    retriveGameState() {
+        return this._dataClient.getGameState(this._roomName);
+    }
+
+    /**
+   * Starts the gameroom lobby and renders the list of gamerooms from the database into a div
+   * @param {string} selector
    * @param {string} selector
    */
-    gameRoomLobby(selector) {
-        const lobby = 'lobby';
+    gameRoomLobby(selector, selector2) {
 
-        this.startMeeting(lobby, selector);
+
+        if (this._api !== false && this._roomName !== 'JitsiGameLobby') {
+            this._roomName = 'JitsiGameLobby';
+            this._api.executeCommand('hangup');
+            this._api.dispose();
+            console.log('b');
+            document.querySelector('#game--container').innerHTML = ' ';
+            this.startMeeting(this._roomName, selector);
+            this.handleGameList(selector2);
+        }
+
+        if (this._roomName === false) {
+            console.log('a');
+            this._roomName = 'JitsiGameLobby';
+            this.startMeeting(this._roomName, selector);
+            this.handleGameList(selector2);
+        }
+
     }
 
     /**
@@ -162,6 +228,33 @@ class JitsiGame {
         /* eslint-enable no-undef */
         console.log(this._api._url);
     }
+
+    /**
+ * this function will make a ul of links using saved urls from db
+ *
+ **/
+    handleGameList(selector) {
+        console.log('finished!');
+        const gamelist = this.gameList();
+
+        console.log(selector);
+
+        // document.getElementById(elementId).appendChild(gameList);
+        gamelist.then(games => {
+            document.querySelector(selector).innerHTML = ' ';
+            const gameList = document.createElement('ul');
+
+            console.log(games);
+            games.forEach(game => {
+                const li = document.createElement('li');
+
+                li.appendChild(document.createTextNode(game));
+                gameList.appendChild(li);
+            });
+            document.querySelector(selector).appendChild(gameList);
+        });
+    }
+
 
     /**
    * injects component into DOM at selector

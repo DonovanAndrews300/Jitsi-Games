@@ -3,7 +3,7 @@
  * this function will make a ul of links using saved urls from db
  *
  **/
-function finishedWithNewGame() {
+/* \ function finishedWithNewGame() {
     console.log('finished!');
     gamelist = jg.gameList();
 
@@ -22,40 +22,47 @@ function finishedWithNewGame() {
         });
         document.querySelector(selector).appendChild(gameList);
     });
-}
+}*/
 
 /**
  * This function handles the new game button event
  *
  **/
-function handleNewGame(selector) {
-    p = jg.newGame('#meet');
-    p.then(() => {
-        console.log(' a new game!!!');
-        finishedWithNewGame(jg);
-    })
-    .catch(() => {
-        alert('it failed!');
-    })
-    .finally(() => {
-        console.log('runs no matter what');
-    });
-}
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('document is ready. I can start now');
-    const game1 = [ '', '', '', '', '', '', '', '', '' ];
 
-    jg = new JitsiGame(config);
-    ttt = new TicTacToe(game1);
-    jg.gameRoomLobby('#meet');
+
+    console.log('document is ready. I can start now');
+    const jg = new JitsiGame(config);
+    const playerSession = jg.handlePlayerSession();
+    const ttt = new TicTacToe(jg, playerSession);
+
+    /**
+     * handler for newGame
+     */
+    function handleNewGame() {
+        p = jg.newGame('#meet');
+        p.then(() => {
+            console.log(' a new game!!!');
+        })
+        .catch(() => {
+            alert('it failed!');
+        })
+        .finally(() => {
+            console.log('runs no matter what');
+        });
+    }
+
+    jg.gameRoomLobby('#meet', '#gamelist');
+    //ttt.handleClickEvents('.cell', '.game--restart');
+    document.getElementById('btnNewGame').addEventListener('click', () => {
+        handleNewGame();
+        ttt.renderGameGrid('#gamelist', '#game--container');
+    });
+    document.getElementById('lobby').addEventListener('click', () => jg.gameRoomLobby('#meet', '#gamelist'));
+
 
     //    jg.testComponent('#webpack');
-    document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', event => {
-        ttt.handleCellClick(event);
-    }));
-    document.querySelector('.game--restart').addEventListener('click', event => {
-        ttt.handleRestartGame();
-    });
-    document.getElementById('btnNewGame').onclick = handleNewGame;
 
 });
+
+

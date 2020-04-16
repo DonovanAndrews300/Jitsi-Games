@@ -4,12 +4,49 @@
     /**
      * Properties for each game
      */
-    constructor(gameState) {
-        this.gameState = gameState;
+    constructor(JitsiGame, playerSession) {
+        this.gameState = false;
+        this.JitsiGame = JitsiGame;
+        this.playerSession = playerSession;
         this.currentPlayer = 'X';
         this.gameActive = true;
         console.log('constructing now');
+        console.log('Gamestate is:', this.gameState);
     }
+
+    /**
+     * loads in a gamestate from the database
+     */
+    initGameState() {
+        this.gameState = this.loadGameState();
+        if (!this.gameState) {
+            this.gameState = {
+                game: [ '', '', '', '', '', '', '', '', '' ],
+                players: {},
+                turn: this.playerSession
+            };
+            this.gameState.players[this.playerSession] = 'X';
+            console.log(this.gameState);
+            this.saveGameState();
+        }
+
+    }
+
+    /**
+     * loads the gamestate
+     */
+    loadGameState() {
+        this.gameState = this.JitsiGame.retrieveGameState();
+    }
+
+
+    /**
+     * This will render the tictactoe grid in the Dom
+     * @param  {Element} root
+     */
+    /* renderGame(root) {
+
+    }*/
 
     /**
      *
@@ -48,6 +85,7 @@
         // With this handler we will update the game state and the UI
         this.gameState[clickedCellIndex] = this.currentPlayer;
         clickedCell.innerHTML = this.currentPlayer;
+        this.JitsiGame.saveGameState(this.gameState);
     }
 
     /**
@@ -120,6 +158,36 @@
             });
     }
 
+    /**
+     * renders tictactoe grid to the dom
+     * @param  {string} selector
+     */
+    renderGameGrid(selector, gridSelector) {
+        document.querySelector(selector).innerHTML = ' ';
+        document.querySelector(gridSelector).innerHTML = `
+        <div data-cell-index="0" class="cell"></div>
+        <div data-cell-index="1" class="cell"></div>
+        <div data-cell-index="2" class="cell"></div>
+        <div data-cell-index="3" class="cell"></div>
+        <div data-cell-index="4" class="cell"></div>
+        <div data-cell-index="5" class="cell"></div>
+        <div data-cell-index="6" class="cell"></div>
+        <div data-cell-index="7" class="cell"></div>
+        <div data-cell-index="8" class="cell"></div>
+        <button class="game--restart">Restart Game</button>  
+    `;
+    }
+
+    /**
+     */
+    handleClickEvents() {
+        document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', event => {
+            this.handleCellClick(event);
+        }));
+        document.querySelector('.game--restart').addEventListener('click', event => {
+            this.handleRestartGame(event);
+        });
+    }
 }
 
 

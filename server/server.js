@@ -18,6 +18,7 @@ app.get('/', (req, res) => {
     // gets from db
     client.lrange('domains', 0, -1, (err, reply) => {
         res.json(reply);
+
     });
     console.log(res.body);
 });
@@ -29,6 +30,23 @@ app.post('/', (req, res) => {
     client.lpush('domains', body, (err, reply) => {
         console.log(reply);
         res.json(reply);
+    });
+});
+
+app.get('/gameState', (req, res) => {
+    // gets gamestate from database
+    client.get(`gameStates${req.params.roomName}`, (err, reply) => {
+        res.json(reply);
+    });
+});
+
+app.post('/gameState', (req, res) => {
+    const gameData = req.body.data;
+    console.log(gameData)
+
+    client.set(`gameStates${gameData.roomName}`, gameData.gameState, (err, reply) => {
+        res.json(reply);
+        res.send(reply)
     });
 });
 
