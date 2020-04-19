@@ -162,9 +162,8 @@
      * renders tictactoe grid to the dom
      * @param  {string} selector
      */
-    renderGameGrid(selector, gridSelector) {
-        document.querySelector(selector).innerHTML = ' ';
-        document.querySelector(gridSelector).innerHTML = `
+    renderGame() {
+        document.querySelector('#game--container').innerHTML = `
         <div data-cell-index="0" class="cell"></div>
         <div data-cell-index="1" class="cell"></div>
         <div data-cell-index="2" class="cell"></div>

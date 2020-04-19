@@ -111,8 +111,9 @@ class JitsiGame {
    * generates main jitsi game class with provided data client configuration
    * @param {object} config
    */
-    constructor(config) {
+    constructor(config, Game) {
         // Need this._roomname
+        this.Game = Game;
         this.config = config;
         console.log('constructing now');
         this._dataClient = new DataClient(this.config);
@@ -124,22 +125,28 @@ class JitsiGame {
    * Generates a new game window
    * @param {string} selector
    */
-    newGame(selector) {
-        return new Promise((resolve, reject) => {
-            this._api.executeCommand('hangup');
-            this._api.dispose();
-            this._roomName = generateRoomWithoutSeparator();
-
+    newGame(selector, roomName) {
+        this._api.executeCommand('hangup');
+        this._api.dispose();
+        document.querySelector('#gamelist').innerHTML = ' ';
+        this.Game.renderGame();
+        this.Game.handleClickEvents();
+        if (roomName) {
+            this._roomName = roomName;
             this.startMeeting(this._roomName, selector);
-            const result = this._dataClient.postGame(this._roomName);
+        } else {
+            return new Promise((resolve, reject) => {
+                this._roomName = generateRoomWithoutSeparator();
+                this.startMeeting(this._roomName, selector);
+                const result = this._dataClient.postGame(this._roomName);
 
-            if (result) {
-                resolve(result);
-            } else {
-                reject('no results');
-            }
-        });
-
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject('no results');
+                }
+            });
+        }
     }
 
 
@@ -248,11 +255,19 @@ class JitsiGame {
             games.forEach(game => {
                 const li = document.createElement('li');
 
+                li.classList.add('roomLink');
                 li.appendChild(document.createTextNode(game));
+                li.addEventListener('click', () => {
+                    this.newGame('#gamelist', game);
+                    this.Game.renderGame();
+                    this.Game.handleClickEvents();
+                });
+
                 gameList.appendChild(li);
             });
             document.querySelector(selector).appendChild(gameList);
         });
+
     }
 
 

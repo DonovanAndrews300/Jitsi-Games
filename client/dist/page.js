@@ -32,9 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     console.log('document is ready. I can start now');
-    const jg = new JitsiGame(config);
+    let jg = new JitsiGame(config);
     const playerSession = jg.handlePlayerSession();
     const ttt = new TicTacToe(jg, playerSession);
+
+    jg = new JitsiGame(config, ttt);
 
     /**
      * handler for newGame
@@ -53,15 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     jg.gameRoomLobby('#meet', '#gamelist');
-    //ttt.handleClickEvents('.cell', '.game--restart');
+
     document.getElementById('btnNewGame').addEventListener('click', () => {
         handleNewGame();
-        ttt.renderGameGrid('#gamelist', '#game--container');
     });
     document.getElementById('lobby').addEventListener('click', () => jg.gameRoomLobby('#meet', '#gamelist'));
 
+    // .addEventListener('click', () => ttt.renderGame());
+
 
     //    jg.testComponent('#webpack');
+
 
 });
 
