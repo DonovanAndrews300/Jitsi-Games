@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btnNewGame').addEventListener('click', () => {
         handleNewGame();
+
     });
     document.getElementById('lobby').addEventListener('click', () => jg.gameRoomLobby('#meet', '#gamelist'));
 

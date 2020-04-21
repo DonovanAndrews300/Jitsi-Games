@@ -130,7 +130,6 @@ class JitsiGame {
         this._api.dispose();
         document.querySelector('#gamelist').innerHTML = ' ';
         this.Game.renderGame();
-        this.Game.handleClickEvents();
         if (roomName) {
             this._roomName = roomName;
             this.startMeeting(this._roomName, selector);
@@ -260,7 +259,6 @@ class JitsiGame {
                 li.addEventListener('click', () => {
                     this.newGame('#gamelist', game);
                     this.Game.renderGame();
-                    this.Game.handleClickEvents();
                 });
 
                 gameList.appendChild(li);

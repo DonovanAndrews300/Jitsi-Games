@@ -175,6 +175,7 @@
         <div data-cell-index="8" class="cell"></div>
         <button class="game--restart">Restart Game</button>  
     `;
+        this.handleClickEvents();
     }
 
     /**
