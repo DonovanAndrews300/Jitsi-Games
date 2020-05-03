@@ -90,6 +90,8 @@ class DataClient {
      * @param  {string} gameState
      */
     postGameState(roomName, gameState) {
+        console.log(roomName);
+
         return this.postData(this.config.gameState, { roomName,
             gameState });
     }
@@ -99,7 +101,7 @@ class DataClient {
      * @param  {string} roomName
      */
     getGameState(roomName) {
-        return this.getData(`${this.config.gameUrl}?roomName=${roomName}`);
+        return this.getData(`${this.config.gameState}?roomName=${roomName}`);
     }
 }
 
@@ -111,14 +113,17 @@ class JitsiGame {
    * generates main jitsi game class with provided data client configuration
    * @param {object} config
    */
-    constructor(config, Game) {
-        // Need this._roomname
-        this.Game = Game;
+    constructor(config) {
+        // Need this.gameRoom.name
         this.config = config;
         console.log('constructing now');
         this._dataClient = new DataClient(this.config);
         this._api = false;
-        this._roomName = false;
+        this.gameRoom = {
+            name: false,
+            playerSession: this.handlePlayerSession()
+        };
+
     }
 
     /**
@@ -129,15 +134,14 @@ class JitsiGame {
         this._api.executeCommand('hangup');
         this._api.dispose();
         document.querySelector('#gamelist').innerHTML = ' ';
-        this.Game.renderGame();
         if (roomName) {
-            this._roomName = roomName;
-            this.startMeeting(this._roomName, selector);
+            this.gameRoom.name = roomName;
+            this.startMeeting(this.gameRoom.name, selector);
         } else {
             return new Promise((resolve, reject) => {
-                this._roomName = generateRoomWithoutSeparator();
-                this.startMeeting(this._roomName, selector);
-                const result = this._dataClient.postGame(this._roomName);
+                this.gameRoom.name = generateRoomWithoutSeparator();
+                this.startMeeting(this.gameRoom.name, selector);
+                const result = this._dataClient.postGame(this.gameRoom.name);
 
                 if (result) {
                     resolve(result);
@@ -174,21 +178,6 @@ class JitsiGame {
     }
 
     /**
-     * saves the gamestate object to the database
-     * @param  {} gameState
-     */
-    saveGameState(gameState) {
-        return this._dataClient.postGameState(this._roomName, gameState);
-    }
-
-    /**
-     * returns gamestate object
-     */
-    retriveGameState() {
-        return this._dataClient.getGameState(this._roomName);
-    }
-
-    /**
    * Starts the gameroom lobby and renders the list of gamerooms from the database into a div
    * @param {string} selector
    * @param {string} selector
@@ -196,20 +185,20 @@ class JitsiGame {
     gameRoomLobby(selector, selector2) {
 
 
-        if (this._api !== false && this._roomName !== 'JitsiGameLobby') {
-            this._roomName = 'JitsiGameLobby';
+        if (this._api !== false && this.gameRoom.name !== 'JitsiGameLobby') {
+            this.gameRoom.name = 'JitsiGameLobby';
             this._api.executeCommand('hangup');
             this._api.dispose();
             console.log('b');
             document.querySelector('#game--container').innerHTML = ' ';
-            this.startMeeting(this._roomName, selector);
+            this.startMeeting(this.gameRoom.name, selector);
             this.handleGameList(selector2);
         }
 
-        if (this._roomName === false) {
+        if (this.gameRoom.name === false) {
             console.log('a');
-            this._roomName = 'JitsiGameLobby';
-            this.startMeeting(this._roomName, selector);
+            this.gameRoom.name = 'JitsiGameLobby';
+            this.startMeeting(this.gameRoom.name, selector);
             this.handleGameList(selector2);
         }
 
@@ -232,7 +221,7 @@ class JitsiGame {
         /* eslint-disable no-undef */
         this._api = new JitsiMeetExternalAPI(domain, options);
         /* eslint-enable no-undef */
-        console.log(this._api._url);
+
     }
 
     /**
@@ -240,17 +229,14 @@ class JitsiGame {
  *
  **/
     handleGameList(selector) {
-        console.log('finished!');
         const gamelist = this.gameList();
 
-        console.log(selector);
 
         // document.getElementById(elementId).appendChild(gameList);
         gamelist.then(games => {
             document.querySelector(selector).innerHTML = ' ';
             const gameList = document.createElement('ul');
 
-            console.log(games);
             games.forEach(game => {
                 const li = document.createElement('li');
 
@@ -258,7 +244,6 @@ class JitsiGame {
                 li.appendChild(document.createTextNode(game));
                 li.addEventListener('click', () => {
                     this.newGame('#gamelist', game);
-                    this.Game.renderGame();
                 });
 
                 gameList.appendChild(li);

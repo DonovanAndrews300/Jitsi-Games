@@ -28,7 +28,6 @@ app.post('/', (req, res) => {
     const body = req.body.data;
 
     client.lpush('domains', body, (err, reply) => {
-        console.log(reply);
         res.json(reply);
     });
 });
@@ -41,12 +40,12 @@ app.get('/gameState', (req, res) => {
 });
 
 app.post('/gameState', (req, res) => {
-    const gameData = req.body.data;
-    console.log(gameData)
+    const gameData = JSON.stringify(req.body.data);
+
+    console.log(gameData);
 
     client.set(`gameStates${gameData.roomName}`, gameData.gameState, (err, reply) => {
-        res.json(reply);
-        res.send(reply)
+        console.log(gameData);
     });
 });
 

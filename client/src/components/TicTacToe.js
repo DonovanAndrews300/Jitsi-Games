@@ -3,42 +3,65 @@
    */class TicTacToe {
     /**
      * Properties for each game
+     * !!This should take in a gamerooM object that ill be created in jg contructor
      */
-    constructor(JitsiGame, playerSession) {
+    constructor(dataClient) {
         this.gameState = false;
-        this.JitsiGame = JitsiGame;
-        this.playerSession = playerSession;
+        this.gameRoom = false;
+        this._dataClient = dataClient;
         this.currentPlayer = 'X';
         this.gameActive = true;
+        this.initGameState();
         console.log('constructing now');
-        console.log('Gamestate is:', this.gameState);
+
+        // console.log('Gamestate is:', this.gameState);
     }
 
     /**
      * loads in a gamestate from the database
      */
     initGameState() {
-        this.gameState = this.loadGameState();
+        console.log('running');
+
+        // this.gameState = this.loadGameState();
         if (!this.gameState) {
             this.gameState = {
                 game: [ '', '', '', '', '', '', '', '', '' ],
                 players: {},
-                turn: this.playerSession
+                turn: this.gameRoom.playerSession
             };
-            this.gameState.players[this.playerSession] = 'X';
+
+            // this.gameState.players[this.gameRoom.playerSession] = 'X';
             console.log(this.gameState);
-            this.saveGameState();
+            this.setGameState();
         }
 
     }
 
     /**
-     * loads the gamestate
+     * set gameRoom object in the constructor
+     * @param {object} gameRoom
      */
-    loadGameState() {
-        this.gameState = this.JitsiGame.retrieveGameState();
+    setGameRoom(gameRoom) {
+        this.gameRoom = gameRoom;
     }
 
+    /**
+     * saves gamestate to the database
+     */
+    setGameState() {
+        console.log(this.gameRoom);
+
+        return this._dataClient.postGameState(this.gameRoom.name, this.gameState);
+    }
+
+    /**
+     * gets a list of gamestates from the backend server
+     * @param  {string} roomName
+     */
+    loadGameState(roomName) {
+        return this._dataClient.getGameState(`${this._dataClient.config.gameUrl}?roomName=${roomName}`);
+    }
 
     /**
      * This will render the tictactoe grid in the Dom
@@ -85,7 +108,6 @@
         // With this handler we will update the game state and the UI
         this.gameState[clickedCellIndex] = this.currentPlayer;
         clickedCell.innerHTML = this.currentPlayer;
-        this.JitsiGame.saveGameState(this.gameState);
     }
 
     /**
