@@ -1,5 +1,5 @@
 const config = {
-    gameUrl: 'http://localhost:3000/',
-    gameState: 'http://localhost:3000/gameState'
+    gameRoomUrl: 'http://localhost:3000/gameRoom',
+    gameStateUrl: 'http://localhost:3000/gameState'
 
 };

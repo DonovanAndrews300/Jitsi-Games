@@ -3,11 +3,11 @@
    */class TicTacToe {
     /**
      * Properties for each game
-     * !!This should take in a gamerooM object that ill be created in jg contructor
+     * !!This should take in a gameroom object that ill be created in jg contructor
      */
-    constructor(dataClient) {
+    constructor(gameRoom, dataClient) {
         this.gameState = false;
-        this.gameRoom = false;
+        this.gameRoom = gameRoom;
         this._dataClient = dataClient;
         this.currentPlayer = 'X';
         this.gameActive = true;
@@ -21,35 +21,58 @@
      * loads in a gamestate from the database
      */
     initGameState() {
-        console.log('running');
+        console.log('init tictactoe');
+        this.loadGameState(this.gameRoom.name).then(gamestateloaded => {
+            if (gamestateloaded) {
+                this.gameState = JSON.parse(gamestateloaded).gameState;
+                console.log(this.gameState);
+                this.updateGrid();
+            }
+            if (!gamestateloaded) {
+                this.gameState = {
+                    game: [ '', '', '', '', '', '', '', '', '' ],
+                    players: {},
+                    turn: this.gameRoom.playerSession
+                };
 
-        // this.gameState = this.loadGameState();
-        if (!this.gameState) {
-            this.gameState = {
-                game: [ '', '', '', '', '', '', '', '', '' ],
-                players: {},
-                turn: this.gameRoom.playerSession
-            };
+                // this.gameState.players[this.gameRoom.playerSession] = 'X';
+                this.saveGameState();
+            }
+        });
 
-            // this.gameState.players[this.gameRoom.playerSession] = 'X';
-            console.log(this.gameState);
-            this.setGameState();
-        }
 
     }
+
 
     /**
-     * set gameRoom object in the constructor
-     * @param {object} gameRoom
+     * Updates TicTacToe Grid from the database
+     * @param {string} selector
      */
-    setGameRoom(gameRoom) {
-        this.gameRoom = gameRoom;
+    updateGrid() {
+        const gridCells = document.querySelectorAll('.cell');
+
+        console.log(gridCells);
+        const updateCell = cell => {
+            // eslint-disable-next-line radix
+            const cellIndex = parseInt(
+                cell.getAttribute('data-cell-index')
+            );
+
+            console.log(this.gameState.game);
+
+            cell.innerHTML = this.gameState.game[cellIndex];
+
+            console.log(cellIndex);
+        };
+
+        gridCells.forEach(updateCell);
     }
+
 
     /**
      * saves gamestate to the database
      */
-    setGameState() {
+    saveGameState() {
         console.log(this.gameRoom);
 
         return this._dataClient.postGameState(this.gameRoom.name, this.gameState);
@@ -60,16 +83,9 @@
      * @param  {string} roomName
      */
     loadGameState(roomName) {
-        return this._dataClient.getGameState(`${this._dataClient.config.gameUrl}?roomName=${roomName}`);
+        return this._dataClient.getGameState(roomName);
     }
 
-    /**
-     * This will render the tictactoe grid in the Dom
-     * @param  {Element} root
-     */
-    /* renderGame(root) {
-
-    }*/
 
     /**
      *
@@ -79,6 +95,8 @@
         // Will save the clcicked element in a variable for use
         const clickedCell = clickedCellEvent.target;
 
+        console.log(this.gameState);
+
         // Identifies the cells location on the grid
         // eslint-disable-next-line radix
         const clickedCellIndex = parseInt(
@@ -87,7 +105,7 @@
 
         // Checks to see if the cell is played already or if the game is over
         // If so the click is ignored
-        if (this.gameState[clickedCellIndex] !== '' || !this.gameActive) {
+        if (this.gameState.game[clickedCellIndex] !== '' || !this.gameActive) {
             return;
         }
 
@@ -106,7 +124,8 @@
      */
     handleGameStateUpdate(clickedCell, clickedCellIndex) {
         // With this handler we will update the game state and the UI
-        this.gameState[clickedCellIndex] = this.currentPlayer;
+        this.gameState.game[clickedCellIndex] = this.currentPlayer;
+        this.saveGameState();
         clickedCell.innerHTML = this.currentPlayer;
     }
 
@@ -122,7 +141,7 @@
      */
     handleResult() {
         let roundWon = false;
-        const roundDraw = !this.gameState.includes('');
+        const roundDraw = !this.gameState.game.includes('');
         const winConditions = [
             [ 0, 1, 2 ],
             [ 3, 4, 5 ],
@@ -135,9 +154,9 @@
         ];
 
         winConditions.forEach(winCondition => {
-            const a = this.gameState[winCondition[0]];
-            const b = this.gameState[winCondition[1]];
-            const c = this.gameState[winCondition[2]];
+            const a = this.gameState.game[winCondition[0]];
+            const b = this.gameState.game[winCondition[1]];
+            const c = this.gameState.game[winCondition[2]];
 
 
             if (a === b && b === c) {
@@ -173,11 +192,12 @@
     handleRestartGame() {
         this.gameActive = true;
         this.currentPlayer = 'X';
-        this.gameState = [ '', '', '', '', '', '', '', '', '' ];
+        this.gameState.game = [ '', '', '', '', '', '', '', '', '' ];
         document.querySelectorAll('.cell')
             .forEach(cell => {
                 cell.innerHTML = '';
             });
+            this.saveGameState();
     }
 
     /**
@@ -211,6 +231,4 @@
         });
     }
 }
-
-
 export default TicTacToe;

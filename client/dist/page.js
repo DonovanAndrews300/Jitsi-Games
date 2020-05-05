@@ -24,7 +24,6 @@
     });
 }*/
 
-
 /**
  * This function handles the new game button event
  *
@@ -34,9 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('document is ready. I can start now');
     let jg = new JitsiGame(config);
-    const ttt = new TicTacToe(jg._dataClient);
 
-    
     /**
      * handler for newGame
      */
@@ -65,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     //    jg.testComponent('#webpack');
+
 
 
 });

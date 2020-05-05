@@ -29,17 +29,15 @@ class DataClient {
    * gets game list from backend server
    */
     getGames() {
-        return this.getData(this.config.gameUrl);
+        return this.getData(this.config.gameRoomUrl);
     }
 
     /**
-   * posts a string to backend server
-   * @param {string} string
+   * posts the gameRoom to backend server
+   * @param {Object} gameRoom
    */
-    postGame(string) {
-        return this.postData(this.config.gameUrl, string);
-
-    // returns postData from url
+    postGame(gameRoom) {
+        return this.postData(this.config.gameRoomUrl, gameRoom);
     }
 
     /**
@@ -47,16 +45,11 @@ class DataClient {
    * @param {string} url
    */
     getData(url) {
+
         return fetch(url)
       .then(data => data.json())
-      .then(resData => {
-          console.log(resData);
-
-          return resData;
-      })
-      .catch(err => {
-          console.log(err.message);
-      });
+      .then(resData => resData)
+      .catch(err => console.log(err.message));
     }
 
     /**
@@ -74,14 +67,8 @@ class DataClient {
             body: JSON.stringify({ data })
         })
       .then(result => result.json())
-      .then(resData => {
-          console.log(resData);
-
-          return resData;
-      })
-      .catch(err => {
-          console.log(err.message);
-      });
+      .then(resData => resData)
+      .catch(err => console.log(err.message));
     }
 
     /**
@@ -90,9 +77,7 @@ class DataClient {
      * @param  {string} gameState
      */
     postGameState(roomName, gameState) {
-        console.log(roomName);
-
-        return this.postData(this.config.gameState, { roomName,
+        return this.postData(this.config.gameStateUrl, { roomName,
             gameState });
     }
 
@@ -101,7 +86,7 @@ class DataClient {
      * @param  {string} roomName
      */
     getGameState(roomName) {
-        return this.getData(`${this.config.gameState}?roomName=${roomName}`);
+        return this.getData(`${this.config.gameStateUrl}?roomName=${roomName}`);
     }
 }
 
@@ -116,32 +101,36 @@ class JitsiGame {
     constructor(config) {
         // Need this.gameRoom.name
         this.config = config;
+        this.Game = false;
         console.log('constructing now');
         this._dataClient = new DataClient(this.config);
         this._api = false;
         this.gameRoom = {
             name: false,
+            gameType: false,
             playerSession: this.handlePlayerSession()
         };
-
     }
 
     /**
    * Generates a new game window
    * @param {string} selector
    */
-    newGame(selector, roomName) {
+    newGame(selector, gameRoom) {
         this._api.executeCommand('hangup');
         this._api.dispose();
         document.querySelector('#gamelist').innerHTML = ' ';
-        if (roomName) {
-            this.gameRoom.name = roomName;
+        if (gameRoom) {
+            this.gameRoom = gameRoom;
+            this.setCurrentGame(this.gameRoom.gameType);
             this.startMeeting(this.gameRoom.name, selector);
         } else {
             return new Promise((resolve, reject) => {
                 this.gameRoom.name = generateRoomWithoutSeparator();
                 this.startMeeting(this.gameRoom.name, selector);
-                const result = this._dataClient.postGame(this.gameRoom.name);
+                this.setCurrentGame();
+                console.log(this.Game);
+                const result = this._dataClient.postGame(this.gameRoom);
 
                 if (result) {
                     resolve(result);
@@ -149,6 +138,31 @@ class JitsiGame {
                     reject('no results');
                 }
             });
+        }
+    }
+
+    /**
+     * sets the selected game from the dropdown as the objects game
+     */
+    setCurrentGame(gameType) {
+        const gameMenu = document.querySelector('#gameMenu');
+        const selectedGame = gameType ? gameType : gameMenu.options[gameMenu.selectedIndex].value;
+
+      
+        switch (selectedGame) {
+        case 'TicTacToe':
+        case 'Tic Tac Toe':
+            alert('starting TicTacToe...');
+            this.gameRoom.gameType = selectedGame;
+            this.Game = new TicTacToe(this.gameRoom, this._dataClient);
+            this.Game.renderGame();
+            break;
+
+        case 'Hangman':
+        case 'Hang man':
+            alert('comming soon... Hangman!');
+            break;
+
         }
     }
 
@@ -168,14 +182,13 @@ class JitsiGame {
     }
 
     /**
-   * Gets a list of games
-   * @param {string} selector
+   * Gets a list of games from the database and parses it
    */
-    gameList() {
+    handleGameList() {
 
-        // make this return list of roomnames from the db
         return this._dataClient.getGames();
     }
+
 
     /**
    * Starts the gameroom lobby and renders the list of gamerooms from the database into a div
@@ -183,7 +196,7 @@ class JitsiGame {
    * @param {string} selector
    */
     gameRoomLobby(selector, selector2) {
-
+        console.log(this);
 
         if (this._api !== false && this.gameRoom.name !== 'JitsiGameLobby') {
             this.gameRoom.name = 'JitsiGameLobby';
@@ -192,14 +205,14 @@ class JitsiGame {
             console.log('b');
             document.querySelector('#game--container').innerHTML = ' ';
             this.startMeeting(this.gameRoom.name, selector);
-            this.handleGameList(selector2);
+            this.renderGameList(selector2);
         }
 
         if (this.gameRoom.name === false) {
             console.log('a');
             this.gameRoom.name = 'JitsiGameLobby';
             this.startMeeting(this.gameRoom.name, selector);
-            this.handleGameList(selector2);
+            this.renderGameList(selector2);
         }
 
     }
@@ -228,22 +241,21 @@ class JitsiGame {
  * this function will make a ul of links using saved urls from db
  *
  **/
-    handleGameList(selector) {
-        const gamelist = this.gameList();
+    renderGameList(selector) {
+        const gamelist = this.handleGameList();
 
-
-        // document.getElementById(elementId).appendChild(gameList);
         gamelist.then(games => {
             document.querySelector(selector).innerHTML = ' ';
             const gameList = document.createElement('ul');
 
             games.forEach(game => {
+                const parsedGame = JSON.parse(game);
                 const li = document.createElement('li');
 
                 li.classList.add('roomLink');
-                li.appendChild(document.createTextNode(game));
+                li.appendChild(document.createTextNode(parsedGame.name));
                 li.addEventListener('click', () => {
-                    this.newGame('#gamelist', game);
+                    this.newGame('#gamelist', parsedGame);
                 });
 
                 gameList.appendChild(li);
