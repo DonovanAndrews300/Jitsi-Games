@@ -8,12 +8,20 @@ const port = process.env.PORT || 8080;
 
 const client = redis.createClient(process.env.REDIS_URL);
 
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static('client/build'));
+}
 client.on('connect', () => {
     console.log('Redis is connected');
 });
 app.use(bodyParser.json());
-app.use(express.static(__dirname + "/dist"));
+app.use(express.static(__dirname + "/dist/"));
 app.use(cors());
+
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname,  "build", "index.html"));
+});
+
 
 app.get('/gameRoom', (req, res) => {
     // gets list of gameRoom objects from the database
