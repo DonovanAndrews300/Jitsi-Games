@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const redis = require('redis');
 const cors = require('cors');
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 
 const client = redis.createClient();
 
@@ -12,6 +12,7 @@ client.on('connect', () => {
     console.log('Redis is connected');
 });
 app.use(bodyParser.json());
+app.use(express.static(__dirname + "/dist"));
 app.use(cors());
 
 app.get('/gameRoom', (req, res) => {
