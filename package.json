@@ -9,7 +9,6 @@
   "scripts": {
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "webpack -p",
     "dev": "npx webpack-dev-server --config webpack.config.js --content-base client/dist/",
     "build": "npx webpack --config webpack.config.js",
     "start": "node server/server.js",
