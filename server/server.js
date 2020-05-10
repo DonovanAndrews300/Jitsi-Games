@@ -2,21 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const path = require('path')
+const path = require('path');
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT || 8080;
 
 const client = redis.createClient(process.env.REDIS_URL);
 
-if (process.env.NODE_ENV === 'production') {
-	app.use(express.static('client/build'));
-}
 client.on('connect', () => {
     console.log('Redis is connected');
 });
 app.use(bodyParser.json());
-app.use(express.static("client"));
 app.use(cors());
 
 
@@ -47,5 +43,14 @@ app.post('/gameState', (req, res) => {
 
     client.set(`gameStates${roomName}`, gameState, (err, reply) => console.log(gameState));
 });
+
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('client/dist'));
+    
+    app.get('*', (req,res) => {
+        res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+    })
+}
 
 app.listen(port, () => console.log(`Running on port ${port}`));
