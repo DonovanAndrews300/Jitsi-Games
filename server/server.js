@@ -6,7 +6,7 @@ const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT || 8080;
 
-const client = redis.createClient();
+const client = redis.createClient(process.env.REDIS_URL);
 
 client.on('connect', () => {
     console.log('Redis is connected');
