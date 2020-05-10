@@ -16,12 +16,9 @@ client.on('connect', () => {
     console.log('Redis is connected');
 });
 app.use(bodyParser.json());
-app.use(express.static(__dirname + "/dist/"));
+app.use(express.static("client"));
 app.use(cors());
 
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname,  "build", "index.html"));
-});
 
 
 app.get('/gameRoom', (req, res) => {
