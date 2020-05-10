@@ -1,5 +1,3 @@
-client/dist/config.js
-client/dist/main.js
 client/node_modules
 server/node_modules
 node_modules
