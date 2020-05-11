@@ -46,10 +46,10 @@ app.post('/gameState', (req, res) => {
 
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('client/build'));
+    app.use(express.static('client/dist'));
     
     app.get('*', (req,res) => {
-        res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+        res.sendFile(path.join('Jitsi-Games', 'client', 'dist', 'index.html'));
     })
 }
 
