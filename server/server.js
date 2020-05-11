@@ -46,11 +46,11 @@ app.post('/gameState', (req, res) => {
 
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('dist'));
+    app.use(express.static('build'));
     
     app.get('*', (req,res) => {
         res.sendFile(path.join('Jitsi-Games', 'client', 'dist', 'index.html'));
-    })
+    });
 }
 
 app.listen(port, () => console.log(`Running on port ${port}`));
