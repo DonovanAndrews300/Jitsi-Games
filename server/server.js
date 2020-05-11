@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const path = require('path')
+const path = require('path');
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT || 8080;
@@ -10,18 +10,18 @@ const port = process.env.PORT || 8080;
 const client = redis.createClient(process.env.REDIS_URL);
 
 if (process.env.NODE_ENV === 'production') {
-	app.use(express.static('client/build'));
+    app.use(express.static('client/dist'));
+    
+    app.get('*', (req,res) => {
+        res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+    })
 }
 client.on('connect', () => {
     console.log('Redis is connected');
 });
 app.use(bodyParser.json());
-app.use(express.static(__dirname + "/dist/"));
 app.use(cors());
 
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname,  "build", "index.html"));
-});
 
 
 app.get('/gameRoom', (req, res) => {
