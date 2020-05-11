@@ -16,7 +16,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-
 app.get('/gameRoom', (req, res) => {
     // gets list of gameRoom objects from the database
     client.lrange('gameRooms', 0, -1, (err, reply) => res.json(reply));
@@ -47,9 +46,9 @@ app.post('/gameState', (req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('build'));
-    
-    app.get('*', (req,res) => {
-        res.sendFile(path.join('Jitsi-Games', 'client', 'dist', 'index.html'));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(`${__dirname}/dist/index.html`));
     });
 }
 
