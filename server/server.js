@@ -9,19 +9,11 @@ const port = process.env.PORT || 8080;
 
 const client = redis.createClient(process.env.REDIS_URL);
 
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('client/dist'));
-    
-    app.get('*', (req,res) => {
-        res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
-    })
-}
 client.on('connect', () => {
     console.log('Redis is connected');
 });
 app.use(bodyParser.json());
 app.use(cors());
-
 
 
 app.get('/gameRoom', (req, res) => {
@@ -50,5 +42,14 @@ app.post('/gameState', (req, res) => {
 
     client.set(`gameStates${roomName}`, gameState, (err, reply) => console.log(gameState));
 });
+
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('build'));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, "build", "index.html"))
+    });
+}
 
 app.listen(port, () => console.log(`Running on port ${port}`));
