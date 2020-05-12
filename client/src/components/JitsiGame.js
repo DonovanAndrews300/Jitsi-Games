@@ -29,7 +29,7 @@ class DataClient {
    * gets game list from backend server
    */
     getGames() {
-        return this.getData(this.config.gameRoomUrl);
+        return this.getData('/');
     }
 
     /**
@@ -37,7 +37,7 @@ class DataClient {
    * @param {Object} gameRoom
    */
     postGame(gameRoom) {
-        return this.postData(this.config.gameRoomUrl, gameRoom);
+        return this.postData('/', gameRoom);
     }
 
     /**
