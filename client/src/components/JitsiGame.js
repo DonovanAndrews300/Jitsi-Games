@@ -30,7 +30,7 @@ class DataClient {
    * gets game list from backend server
    */
     getGames() {
-        return this.getData(this.config.gameRoomUrl);
+        return this.getData('gameRoom');
     }
 
     /**
@@ -38,7 +38,7 @@ class DataClient {
    * @param {Object} gameRoom
    */
     postGame(gameRoom) {
-        return this.postData(this.config.gameRoomUrl, gameRoom);
+        return this.postData('gameRoom', gameRoom);
     }
 
     /**
@@ -78,7 +78,7 @@ class DataClient {
      * @param  {string} gameState
      */
     postGameState(roomName, gameState) {
-        return this.postData(this.config.gameStateUrl, { roomName,
+        return this.postData('gameState', { roomName,
             gameState });
     }
 
@@ -87,7 +87,7 @@ class DataClient {
      * @param  {string} roomName
      */
     getGameState(roomName) {
-        return this.getData(`${this.config.gameStateUrl}?roomName=${roomName}`);
+        return this.getData(`gameState?roomName=${roomName}`);
     }
 }
 

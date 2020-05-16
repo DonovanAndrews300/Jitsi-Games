@@ -5,11 +5,13 @@ const app = express();
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT;
-//process.env redis url
+
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8000 });
-const client = redis.createClient();
 
+const client = redis.createClient(process.env.REDIS_URL);
+
+app.use(express.static('client/dist'));
 
 client.on('connect', () => {
     console.log('Redis is connected');
