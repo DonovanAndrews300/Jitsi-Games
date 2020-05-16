@@ -29,10 +29,8 @@
  *
  **/
 document.addEventListener('DOMContentLoaded', () => {
-
-
     console.log('document is ready. I can start now');
-    let jg = new JitsiGame(config);
+    const jg = new JitsiGame(config);
 
     /**
      * handler for newGame
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     //    jg.testComponent('#webpack');
-
 
 
 });

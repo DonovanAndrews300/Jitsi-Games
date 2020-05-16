@@ -23,6 +23,7 @@ class DataClient {
    */
     constructor(config) {
         this.config = config;
+        this.webSocket = new WebSocket('ws://localhost:8000');
     }
 
     /**
@@ -148,7 +149,7 @@ class JitsiGame {
         const gameMenu = document.querySelector('#gameMenu');
         const selectedGame = gameType ? gameType : gameMenu.options[gameMenu.selectedIndex].value;
 
-      
+
         switch (selectedGame) {
         case 'TicTacToe':
         case 'Tic Tac Toe':

@@ -13,6 +13,8 @@
         this.gameActive = true;
         this.initGameState();
         console.log('constructing now');
+        dataClient.webSocket.send('Message From Client');
+
 
         // console.log('Gamestate is:', this.gameState);
     }
@@ -22,6 +24,7 @@
      */
     initGameState() {
         console.log('init tictactoe');
+        this.getGameStateWS();
         this.loadGameState(this.gameRoom.name).then(gamestateloaded => {
             if (gamestateloaded) {
                 this.gameState = JSON.parse(gamestateloaded).gameState;
@@ -79,6 +82,25 @@
     }
 
     /**
+     * Updates game grid after another client has made a move using websockets
+     */
+    getGameStateWS() {
+        this._dataClient.webSocket.addEventListener('message', (event) => {
+            this.gameState = JSON.parse(event.data);
+            this.updateGrid();
+            
+        });
+    }
+
+    /**
+     * Sends gameState to server using websocket
+     */
+    sendGameStateWS() {
+        this._dataClient.webSocket.send(JSON.stringify(this.gameState));
+    }
+
+
+    /**
      * gets a list of gamestates from the backend server
      * @param  {string} roomName
      */
@@ -126,6 +148,7 @@
         // With this handler we will update the game state and the UI
         this.gameState.game[clickedCellIndex] = this.currentPlayer;
         this.saveGameState();
+        this.sendGameStateWS();
         clickedCell.innerHTML = this.currentPlayer;
     }
 
@@ -197,7 +220,7 @@
             .forEach(cell => {
                 cell.innerHTML = '';
             });
-            this.saveGameState();
+        this.saveGameState();
     }
 
     /**
