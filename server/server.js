@@ -5,7 +5,7 @@ const app = express();
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT;
-const server = express().listen(PORT, () => console.log(`Listening on ${PORT}`));
+const server = express().listen(port, () => console.log(`Listening on ${PORT}`));
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 
