@@ -7,7 +7,7 @@ const cors = require('cors');
 const port = process.env.PORT;
 const wsServer = app.listen(port)
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ {wsServer} });
+const wss = new WebSocket.Server({wsServer});
 
 const client = redis.createClient(process.env.REDIS_URL);
 
