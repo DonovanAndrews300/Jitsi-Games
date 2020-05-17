@@ -5,9 +5,9 @@ const app = express();
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT;
-
+const wsServer = app.listen(port)
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8000 });
+const wss = new WebSocket.Server({ {wsServer} });
 
 const client = redis.createClient(process.env.REDIS_URL);
 
