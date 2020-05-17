@@ -10,8 +10,6 @@ Built with:\
 
 
 
-![](header.png)
-
 ## Installation
 
 ```sh
@@ -22,7 +20,7 @@ npm install --save
 
 ## Meta
 
-Twitter – [@Donovanandrews300](https://twitter.com/donovanandrews300)
+Twitter – [@__DonAndrews](https://twitter.com/__DonAndrews)
 
 ## Contributing
 
