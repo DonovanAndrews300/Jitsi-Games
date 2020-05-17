@@ -4,9 +4,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const redis = require('redis');
 const cors = require('cors');
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8000 });
+const wss = new WebSocket.Server({ port });
 
 const client = redis.createClient(process.env.REDIS_URL);
 
