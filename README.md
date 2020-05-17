@@ -1,5 +1,13 @@
 # Jitsi-Games
-> App that allows you to play html games with your friends .
+An app that allows you to play html games with your friends.
+Built with:
+-JitsiMeet API:https://github.com/jitsi/jitsi-meet/blob/master/doc/api.md
+-Webpack
+-Javascript
+-Express
+-Redis
+-Websockets
+
 
 
 ![](header.png)
