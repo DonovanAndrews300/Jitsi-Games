@@ -5,11 +5,17 @@ const app = express();
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT;
-const wsServer = app.listen(port)
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({wsServer});
 
 const client = redis.createClient(process.env.REDIS_URL);
+const WebSocket = require('ws');
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(port, () => console.log(`Listening on ${port}`));
+
+const wss = new WebSocket.Server({ server });
+
+
+
 
 app.use(express.static('client/dist'));
 
