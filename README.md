@@ -2,8 +2,6 @@
 > App that allows you to play html games with your friends .
 
 
-One to two paragraph statement about your product and what it does.
-
 ![](header.png)
 
 ## Installation
