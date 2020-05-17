@@ -7,7 +7,7 @@ const cors = require('cors');
 const port = process.env.PORT;
 
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port });
+const wss = new WebSocket.Server({ port: 8000 });
 
 const client = redis.createClient(process.env.REDIS_URL);
 
@@ -17,7 +17,7 @@ client.on('connect', () => {
     console.log('Redis is connected');
 });
 
-app.use(express.static(`${__dirname}/client/dist`));
+app.use(express.static(__dirname + '/client/dist'))
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -30,7 +30,7 @@ wss.on('connection', ws => {
 
 wss.broadcast = msg => {
     wss.clients.forEach(socketClient => socketClient.send(msg));
-};
+}
 
 app.get('/gameRoom', (req, res) => {
     // gets list of gameRoom objects from the database
