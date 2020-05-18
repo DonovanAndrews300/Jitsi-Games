@@ -23,7 +23,7 @@ class DataClient {
    */
     constructor(config) {
         this.config = config;
-        this.webSocket = new WebSocket('ws://jitsigame.herokuapp.com');
+        this.webSocket = new WebSocket('wss://jitsigame.herokuapp.com');
     }
 
     /**
