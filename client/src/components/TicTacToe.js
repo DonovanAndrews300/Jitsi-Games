@@ -1,10 +1,10 @@
 /**
- *Tic Tac Toe
- */ class TicTacToe {
+     *Tic Tac Toe
+   */class TicTacToe {
     /**
-   * Properties for each game
-   * !!This should take in a gameroom object that ill be created in jg contructor
-   */
+     * Properties for each game
+     * !!This should take in a gameroom object that ill be created in jg contructor
+     */
     constructor(gameRoom, dataClient) {
         this.gameState = false;
         this.gameRoom = gameRoom;
@@ -15,12 +15,13 @@
         console.log('constructing now');
         dataClient.webSocket.send('Message From Client');
 
-    // console.log('Gamestate is:', this.gameState);
+
+        // console.log('Gamestate is:', this.gameState);
     }
 
     /**
-   * loads in a gamestate from the database
-   */
+     * loads in a gamestate from the database
+     */
     initGameState() {
         console.log('init tictactoe');
         this.getGameStateWS();
@@ -41,19 +42,24 @@
                 this.saveGameState();
             }
         });
+
+
     }
 
+
     /**
-   * Updates TicTacToe Grid from the database
-   * @param {string} selector
-   */
+     * Updates TicTacToe Grid from the database
+     * @param {string} selector
+     */
     updateGrid() {
         const gridCells = document.querySelectorAll('.cell');
 
         console.log(gridCells);
         const updateCell = cell => {
             // eslint-disable-next-line radix
-            const cellIndex = parseInt(cell.getAttribute('data-cell-index'));
+            const cellIndex = parseInt(
+                cell.getAttribute('data-cell-index')
+            );
 
             console.log(this.gameState.game);
 
@@ -65,9 +71,10 @@
         gridCells.forEach(updateCell);
     }
 
+
     /**
-   * saves gamestate to the database
-   */
+     * saves gamestate to the database
+     */
     saveGameState() {
         console.log(this.gameRoom);
 
@@ -75,40 +82,39 @@
     }
 
     /**
-   * Updates game grid after another client has made a move using websockets
-   */
+     * Updates game grid after another client has made a move using websockets
+     */
     getGameStateWS() {
-        this._dataClient.webSocket.then(socket => {
-            socket.addEventListener('message', event => {
-                this.gameState = JSON.parse(event.data);
-                this.updateGrid();
-            });
+        this._dataClient.webSocket.addEventListener('message', (event) => {
+            this.gameState = JSON.parse(event.data);
+            this.updateGrid();
+            
         });
     }
 
     /**
-   * Sends gameState to server using websocket
-   */
+     * Sends gameState to server using websocket
+     */
     sendGameStateWS() {
-        this._dataClient.webSocket.then(socket => {
-            socket.send(JSON.stringify(this.gameState));
-        });
+        this._dataClient.webSocket.send(JSON.stringify(this.gameState));
     }
 
+
     /**
-   * gets a list of gamestates from the backend server
-   * @param  {string} roomName
-   */
+     * gets a list of gamestates from the backend server
+     * @param  {string} roomName
+     */
     loadGameState(roomName) {
         return this._dataClient.getGameState(roomName);
     }
 
+
     /**
-   *
-   * @param {function} clickedCellEvent
-   */
+     *
+     * @param {function} clickedCellEvent
+     */
     handleCellClick(clickedCellEvent) {
-    // Will save the clcicked element in a variable for use
+        // Will save the clcicked element in a variable for use
         const clickedCell = clickedCellEvent.target;
 
         console.log(this.gameState);
@@ -116,7 +122,7 @@
         // Identifies the cells location on the grid
         // eslint-disable-next-line radix
         const clickedCellIndex = parseInt(
-      clickedCell.getAttribute('data-cell-index')
+            clickedCell.getAttribute('data-cell-index')
         );
 
         // Checks to see if the cell is played already or if the game is over
@@ -134,12 +140,12 @@
     }
 
     /**
-   * Updates the gamestate array and the html grid
-   * @param  {function} clickedCell
-   * @param  {function} clickedCellIndex
-   */
+     * Updates the gamestate array and the html grid
+     * @param  {function} clickedCell
+     * @param  {function} clickedCellIndex
+     */
     handleGameStateUpdate(clickedCell, clickedCellIndex) {
-    // With this handler we will update the game state and the UI
+        // With this handler we will update the game state and the UI
         this.gameState.game[clickedCellIndex] = this.currentPlayer;
         this.saveGameState();
         this.sendGameStateWS();
@@ -147,15 +153,15 @@
     }
 
     /**
-   * Changes the player turn
-   */
+     * Changes the player turn
+     */
     handlePlayerChange() {
         this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
     }
 
     /**
-   * Check to see if the game has ended after each turn
-   */
+     * Check to see if the game has ended after each turn
+     */
     handleResult() {
         let roundWon = false;
         const roundDraw = !this.gameState.game.includes('');
@@ -175,18 +181,23 @@
             const b = this.gameState.game[winCondition[1]];
             const c = this.gameState.game[winCondition[2]];
 
+
             if (a === b && b === c) {
+
                 if (a !== '' || b !== '' || c !== '') {
                     roundWon = true;
+
                 }
             }
         });
+
 
         if (roundWon) {
             this.gameActive = false;
 
             return;
         }
+
 
         if (roundDraw) {
             this.gameActive = false;
@@ -197,23 +208,25 @@
         this.handlePlayerChange();
     }
 
+
     /**
-   * Restarts the game
-   */
+     * Restarts the game
+     */
     handleRestartGame() {
         this.gameActive = true;
         this.currentPlayer = 'X';
         this.gameState.game = [ '', '', '', '', '', '', '', '', '' ];
-        document.querySelectorAll('.cell').forEach(cell => {
-            cell.innerHTML = '';
-        });
+        document.querySelectorAll('.cell')
+            .forEach(cell => {
+                cell.innerHTML = '';
+            });
         this.saveGameState();
     }
 
     /**
-   * renders tictactoe grid to the dom
-   * @param  {string} selector
-   */
+     * renders tictactoe grid to the dom
+     * @param  {string} selector
+     */
     renderGame() {
         document.querySelector('#game--container').innerHTML = `
         <div data-cell-index="0" class="cell"></div>
@@ -231,18 +244,14 @@
     }
 
     /**
-   */
+     */
     handleClickEvents() {
-        document.querySelectorAll('.cell').forEach(cell =>
-            cell.addEventListener('click', event => {
-                this.handleCellClick(event);
-            })
-        );
-        document
-      .querySelector('.game--restart')
-      .addEventListener('click', event => {
-          this.handleRestartGame(event);
-      });
+        document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', event => {
+            this.handleCellClick(event);
+        }));
+        document.querySelector('.game--restart').addEventListener('click', event => {
+            this.handleRestartGame(event);
+        });
     }
 }
 export default TicTacToe;

@@ -23,21 +23,7 @@ class DataClient {
    */
     constructor(config) {
         this.config = config;
-        this.webSocket = this.handleWebSocket();
-    }
-
-    handleWebSocket() {
-        return new Promise((resolve, reject) => {
-            const server = new WebSocket('wss://jitsigame.herokuapp.com');
-
-            server.onopen = function() {
-                resolve(server);
-            };
-
-            server.onerror = function(err) {
-                reject(err);
-            };
-        });
+        this.webSocket = new WebSocket('ws://jitsigame.herokuapp.com');
     }
 
     /**
@@ -60,6 +46,7 @@ class DataClient {
    * @param {string} url
    */
     getData(url) {
+
         return fetch(url)
       .then(data => data.json())
       .then(resData => resData)
@@ -86,19 +73,19 @@ class DataClient {
     }
 
     /**
-   * posts a string to the backend server
-   * @param  {string} roomName
-   * @param  {string} gameState
-   */
+     * posts a string to the backend server
+     * @param  {string} roomName
+     * @param  {string} gameState
+     */
     postGameState(roomName, gameState) {
         return this.postData('gameState', { roomName,
             gameState });
     }
 
     /**
-   * gets a list of gamestates from the backend server
-   * @param  {string} roomName
-   */
+     * gets a list of gamestates from the backend server
+     * @param  {string} roomName
+     */
     getGameState(roomName) {
         return this.getData(`gameState?roomName=${roomName}`);
     }
@@ -113,7 +100,7 @@ class JitsiGame {
    * @param {object} config
    */
     constructor(config) {
-    // Need this.gameRoom.name
+        // Need this.gameRoom.name
         this.config = config;
         this.Game = false;
         console.log('constructing now');
@@ -156,13 +143,12 @@ class JitsiGame {
     }
 
     /**
-   * sets the selected game from the dropdown as the objects game
-   */
+     * sets the selected game from the dropdown as the objects game
+     */
     setCurrentGame(gameType) {
         const gameMenu = document.querySelector('#gameMenu');
-        const selectedGame = gameType
-            ? gameType
-            : gameMenu.options[gameMenu.selectedIndex].value;
+        const selectedGame = gameType ? gameType : gameMenu.options[gameMenu.selectedIndex].value;
+
 
         switch (selectedGame) {
         case 'TicTacToe':
@@ -177,12 +163,14 @@ class JitsiGame {
         case 'Hang man':
             alert('comming soon... Hangman!');
             break;
+
         }
     }
 
+
     /**
-   * Handles the player session in local storage
-   */
+     * Handles the player session in local storage
+     */
     handlePlayerSession() {
         let playerSession = window.localStorage.getItem('JitsiGameSession');
 
@@ -198,8 +186,10 @@ class JitsiGame {
    * Gets a list of games from the database and parses it
    */
     handleGameList() {
+
         return this._dataClient.getGames();
     }
+
 
     /**
    * Starts the gameroom lobby and renders the list of gamerooms from the database into a div
@@ -225,6 +215,7 @@ class JitsiGame {
             this.startMeeting(this.gameRoom.name, selector);
             this.renderGameList(selector2);
         }
+
     }
 
     /**
@@ -243,13 +234,14 @@ class JitsiGame {
 
         /* eslint-disable no-undef */
         this._api = new JitsiMeetExternalAPI(domain, options);
-    /* eslint-enable no-undef */
+        /* eslint-enable no-undef */
+
     }
 
     /**
-   * this function will make a ul of links using saved urls from db
-   *
-   **/
+ * this function will make a ul of links using saved urls from db
+ *
+ **/
     renderGameList(selector) {
         const gamelist = this.handleGameList();
 
@@ -271,7 +263,9 @@ class JitsiGame {
             });
             document.querySelector(selector).appendChild(gameList);
         });
+
     }
+
 
     /**
    * injects component into DOM at selector
