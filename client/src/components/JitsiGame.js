@@ -28,13 +28,13 @@ class DataClient {
 
     handleWebSocket() {
         return new Promise((resolve, reject) => {
-            const server = new WebSocket('wss://jitsigame.herokuapp.com')
+            const server = new WebSocket('wss://jitsigame.herokuapp.com');
 
             server.onopen = function() {
                 resolve(server);
             };
 
-            server onerror = function(err) {
+            server.onerror = function(err) {
                 reject(err);
             };
         });
