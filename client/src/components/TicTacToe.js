@@ -90,7 +90,9 @@
    * Sends gameState to server using websocket
    */
     sendGameStateWS() {
-        this._dataClient.webSocket.send(JSON.stringify(this.gameState));
+        this._dataClient.webSocket.then(socket => {
+            socket.send(JSON.stringify(this.gameState));
+        });
     }
 
     /**
