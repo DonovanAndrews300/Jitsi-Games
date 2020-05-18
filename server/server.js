@@ -7,7 +7,10 @@ const cors = require('cors');
 const port = process.env.PORT;
 
 const WebSocket = require('ws');
-const wss = new WebSocket.Server();
+const wss = new WebSocket.Server({
+    port:8000,
+    host:"ws://jitsigame.herokuapp.com"
+});
 
 const client = redis.createClient(process.env.REDIS_URL);
 
