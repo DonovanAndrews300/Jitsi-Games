@@ -33,10 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('document is ready. I can start now');
     let jg = new JitsiGame(config);
-    const playerSession = jg.handlePlayerSession();
-    const ttt = new TicTacToe(jg, playerSession);
-
-    jg = new JitsiGame(config, ttt);
 
     /**
      * handler for newGame

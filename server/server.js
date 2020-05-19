@@ -14,42 +14,31 @@ client.on('connect', () => {
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-    // gets from db
-    client.lrange('domains', 0, -1, (err, reply) => {
-        res.json(reply);
-
-    });
-    console.log(res.body);
+app.get('/gameRoom', (req, res) => {
+    // gets list of gameRoom objects from the database
+    client.lrange('gameRooms', 0, -1, (err, reply) => res.json(reply));
 });
 
-app.post('/', (req, res) => {
+
+app.post('/gameRoom', (req, res) => {
     // adds to db
-    const body = req.body.data;
+    const body = JSON.stringify(req.body.data);
 
-    client.lpush('domains', body, (err, reply) => {
-        console.log(reply);
-        res.json(reply);
-    });
-});
+    client.lpush('gameRooms', body, (err, reply) => console.log(`Posted ${body}`));
+}
+);
 
 app.get('/gameState', (req, res) => {
     // gets gamestate from database
-    client.get(`gameStates${req.params.roomName}`, (err, reply) => {
-        res.json(reply);
-    });
+    client.get(`gameStates${req.query.roomName}`, (err, reply) => res.json(reply));
 });
 
 app.post('/gameState', (req, res) => {
     const gameData = req.body.data;
-    console.log(gameData)
+    const roomName = gameData.roomName;
+    const gameState = JSON.stringify(gameData);
 
-    client.set(`gameStates${gameData.roomName}`, gameData.gameState, (err, reply) => {
-        res.json(reply);
-        res.send(reply)
-    });
+    client.set(`gameStates${roomName}`, gameState, (err, reply) => console.log(gameState));
 });
 
-app.listen(port, () => {
-    console.log(`Running on port ${port}`);
-});
+app.listen(port, () => console.log(`Running on port ${port}`));
