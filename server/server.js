@@ -62,4 +62,3 @@ app.post('/gameState', (req, res) => {
     client.set(`gameStates${roomName}`, gameState, (err, reply) => console.log(gameState));
 });
 
-app.listen(port, () => console.log(`Running on port ${port}`));
