@@ -148,6 +148,7 @@
         // With this handler we will update the game state and the UI
         this.gameState.game[clickedCellIndex] = this.gameState.currentPlayer;
         this.saveGameState();
+        this.handlePlayerChange();
         this.sendGameStateWS();
         clickedCell.innerHTML = this.gameState.currentPlayer;
     }
@@ -205,7 +206,6 @@
             return;
         }
 
-        this.handlePlayerChange();
     }
 
 
