@@ -5,7 +5,7 @@ const app = express();
 const http = require('http');
 const redis = require('redis');
 const cors = require('cors');
-const port = process.env.PORT;
+const port = process.env.PORT||8080;
 const httpServer = http.createServer(app);
 
 const WebSocket = require('ws');
