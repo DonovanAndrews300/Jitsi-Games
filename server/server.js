@@ -2,27 +2,25 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const http = require('http');
 const redis = require('redis');
 const cors = require('cors');
 const port = process.env.PORT;
+const httpServer = http.createServer(app);
 
 const WebSocket = require('ws');
-const INDEX = '/index.html';
-
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(port, () => console.log(`Listening on ${port}`));
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ 'server': httpServer });
 
 const client = redis.createClient(process.env.REDIS_URL);
 
+httpServer.listen(port);
 app.use(express.static('client/dist'));
 
 client.on('connect', () => {
     console.log('Redis is connected');
 });
 
-app.use(express.static(__dirname + '/client/dist'))
+app.use(express.static(`${__dirname}/client/dist`));
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -35,7 +33,7 @@ wss.on('connection', ws => {
 
 wss.broadcast = msg => {
     wss.clients.forEach(socketClient => socketClient.send(msg));
-}
+};
 
 app.get('/gameRoom', (req, res) => {
     // gets list of gameRoom objects from the database
