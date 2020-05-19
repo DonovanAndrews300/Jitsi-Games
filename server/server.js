@@ -7,7 +7,12 @@ const cors = require('cors');
 const port = process.env.PORT;
 
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({port:8000});
+const INDEX = '/index.html';
+
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(port, () => console.log(`Listening on ${port}`));
+const wss = new WebSocket.Server({server});
 
 const client = redis.createClient(process.env.REDIS_URL);
 
