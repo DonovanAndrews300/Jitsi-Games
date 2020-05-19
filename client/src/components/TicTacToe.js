@@ -9,7 +9,6 @@
         this.gameState = false;
         this.gameRoom = gameRoom;
         this._dataClient = dataClient;
-        this.currentPlayer = 'X';
         this.gameActive = true;
         this.initGameState();
         console.log('constructing now');
@@ -34,6 +33,7 @@
             if (!gamestateloaded) {
                 this.gameState = {
                     game: [ '', '', '', '', '', '', '', '', '' ],
+                    currentPlayer: 'X',
                     players: {},
                     turn: this.gameRoom.playerSession
                 };
@@ -85,10 +85,10 @@
      * Updates game grid after another client has made a move using websockets
      */
     getGameStateWS() {
-        this._dataClient.webSocket.addEventListener('message', (event) => {
+        this._dataClient.webSocket.addEventListener('message', event => {
             this.gameState = JSON.parse(event.data);
             this.updateGrid();
-            
+
         });
     }
 
@@ -146,17 +146,17 @@
      */
     handleGameStateUpdate(clickedCell, clickedCellIndex) {
         // With this handler we will update the game state and the UI
-        this.gameState.game[clickedCellIndex] = this.currentPlayer;
+        this.gameState.game[clickedCellIndex] = this.gameState.currentPlayer;
         this.saveGameState();
         this.sendGameStateWS();
-        clickedCell.innerHTML = this.currentPlayer;
+        clickedCell.innerHTML = this.gameState.currentPlayer;
     }
 
     /**
      * Changes the player turn
      */
     handlePlayerChange() {
-        this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+        this.gameState.currentPlayer = this.gameState.currentPlayer === 'X' ? 'O' : 'X';
     }
 
     /**
@@ -214,7 +214,7 @@
      */
     handleRestartGame() {
         this.gameActive = true;
-        this.currentPlayer = 'X';
+        this.gameState.currentPlayer = 'X';
         this.gameState.game = [ '', '', '', '', '', '', '', '', '' ];
         document.querySelectorAll('.cell')
             .forEach(cell => {
