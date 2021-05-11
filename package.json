@@ -44,6 +44,6 @@
     "redis": "^2.8.0",
     "flowtype": "^2.0.0",
     "js-utils": "github:jitsi/js-utils",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   }
 }
