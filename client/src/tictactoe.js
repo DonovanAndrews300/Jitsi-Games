@@ -1,3 +1,3 @@
-const TicTacToe = require('./components/TicTacToe').default;
+const TicTacToe = require('../../TicTacToe').default;
 
 module.exports = TicTacToe;
