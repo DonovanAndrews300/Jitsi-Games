@@ -67,6 +67,54 @@ app.post('/joinGame', (req, res) => {
 
 
 
+app.post('/leaveGame', (req, res) => {
+    const { gameId, playerId } = req.body;
+
+    client.lRange('activeGames', 0, -1)
+        .then((replies) => {
+            const games = replies.map(reply => JSON.parse(reply));
+            const gameIndex = games.findIndex(game => game.gameId === gameId);
+
+            if (gameIndex !== -1) {
+                const playerIndex = games[gameIndex].players.indexOf(playerId);
+                if (playerIndex === -1) {
+                    res.status(404).json({ error: "Player not found in the game" });
+                    return;
+                }
+                const originalGame = JSON.stringify(games[gameIndex]); // Save the original game state as a string
+                games[gameIndex].players.splice(playerIndex, 1);
+                if (games[gameIndex].players.length === 0) {
+                    // Remove the game if there are no players left
+                    return client.lRem('activeGames', 0, originalGame)
+                        .then(() => {
+                            console.log("Game removed:", gameId);
+                            res.status(200).json({ message: 'Player left and game removed since no players are left' });
+                        })
+                        .catch((err) => {
+                            console.error("Error removing game:", err);
+                            res.status(500).json({ error: err.message });
+                        });
+                } else {
+                    // Update the game with the remaining players
+                    return client.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]))
+                        .then(() => {
+                            console.log("Updated game:", games[gameIndex]);
+                            res.status(200).json({ message: 'Player left the game', game: games[gameIndex] });
+                        })
+                        .catch((err) => {
+                            console.error("Error updating game:", err);
+                            res.status(500).json({ error: err.message });
+                        });
+                }
+            } else {
+                res.status(404).json({ error: 'Game not found' });
+            }
+        })
+        .catch((err) => {
+            console.error("Error fetching or updating games:", err);
+            res.status(500).json({ error: err.message });
+        });
+});
 
 wss.on('connection', (ws) => {
     console.log('New client connected');

@@ -51,6 +51,31 @@ export default class DataClient {
         }
     }
 
+    async leaveGame(gameId, playerId) {
+        try {
+            const response = await fetch(`${this.apiUrl}/leaveGame`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ gameId, playerId })
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
+            const result = await response.json();
+            if (this.gameId === gameId) {
+                this.gameId = null; // Clear the gameId if the player leaves the game they are currently in
+            }
+            console.log('Player left the game:', result);
+            return result;
+        } catch (error) {
+            console.error('Error leaving game:', error);
+            throw error;
+        }
+    }
+    
     async joinGame(gameId, playerId) {
         try {
             const response = await fetch(`${this.apiUrl}/joinGame`, {
