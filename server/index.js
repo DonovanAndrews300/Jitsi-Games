@@ -38,35 +38,33 @@ app.post('/game', (req, res) => {
 });
 
 
-// Join a game
 app.post('/joinGame', (req, res) => {
     const { gameId, playerId } = req.body;
-    client.lrange('activeGames', 0, -1, (err, replies) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-        } else {
+    client.lRange('activeGames', 0, -1)
+        .then((replies) => {
             const games = replies.map(reply => JSON.parse(reply));
             const gameIndex = games.findIndex(game => game.gameId === gameId);
             const maxPlayers = 2;
-            if(games[gameIndex].players.length>maxPlayers) {
-                res.status(500).json({ error: "Too many players"});
-            }
             if (gameIndex !== -1) {
+                if (games[gameIndex].players.length >= maxPlayers) {
+                    throw new Error("Too many players");                    
+                }
                 games[gameIndex].players.push(playerId);
-                client.lset('activeGames', gameIndex, JSON.stringify(games[gameIndex]), (err, reply) => {
-                    if (err) {
-                        res.status(500).json({ error: err.message });
-                    } else {
-
+                return client.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]))
+                    .then(() => {
+                        console.log("Updated game:", games[gameIndex]);
                         res.status(200).json({ message: 'Player joined the game', game: games[gameIndex] });
-                    }
-                });
+                    });
             } else {
                 res.status(404).json({ error: 'Game not found' });
             }
-        }
-    });
+        })
+        .catch((err) => {
+            console.error("Error fetching or updating games:", err);
+            res.status(500).json({ error: err.message });
+        });
 });
+
 
 
 

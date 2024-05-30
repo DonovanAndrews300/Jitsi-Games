@@ -60,9 +60,12 @@ export default class DataClient {
                 },
                 body: JSON.stringify({ gameId, playerId })
             });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
             const result = await response.json();
             this.gameId = gameId;
-            console.log('Joined game:', result);
             return result;
         } catch (error) {
             console.error('Error joining game:', error);
