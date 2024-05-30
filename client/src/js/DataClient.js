@@ -42,7 +42,6 @@ export default class DataClient {
                 body: JSON.stringify(gameData)
             });
             const result = await response.json();
-            console.log(response)
             this.gameId = result.gameId;
             console.log('Game created:', result);
             return result;
