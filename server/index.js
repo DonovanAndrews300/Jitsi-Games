@@ -9,6 +9,7 @@ const WebSocket = require('ws');
 const app = express();
 const port = 4000;
 const client = redis.createClient();
+client.connect()
 const wss = new WebSocket.Server({ port: 8080 });
 
 client.on('error', (err) => {
@@ -26,14 +27,16 @@ app.use(cors());
 // Create a new game 
 app.post('/game', (req, res) => {
     const gameData = req.body;
-    client.lpush('activeGames', JSON.stringify(gameData), (err, reply) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-        } else {
+    client.lPush('activeGames', JSON.stringify(gameData))
+        .then(() => {
             res.status(200).json({ message: 'Game created', gameId: gameData.gameId });
-        }
-    });
+        })
+        .catch((err) => {
+            console.error('Error saving game data:', err);
+            res.status(500).json({ error: 'Failed to create game' });
+        });
 });
+
 
 // Join a game
 app.post('/joinGame', (req, res) => {
