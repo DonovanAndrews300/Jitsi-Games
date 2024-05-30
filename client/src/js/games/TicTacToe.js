@@ -73,8 +73,6 @@
      * saves gamestate to the database
      */
     saveGameState() {
-        console.log(this.gameRoom);
-
         return this._dataClient.postGameState(this.gameRoom.name, this.gameState);
     }
 
