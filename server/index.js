@@ -11,6 +11,7 @@ const port = 4000;
 const client = redis.createClient();
 client.connect()
 const wss = new WebSocket.Server({ port: 8080 });
+const gameRooms = new Map();// Better performance for lotta gamerooms++
 
 client.on('error', (err) => {
     console.error('Redis error:', err);
@@ -118,59 +119,54 @@ app.post('/leaveGame', (req, res) => {
 
 wss.on('connection', (ws) => {
     console.log('New client connected');
-    
     ws.on('message', (message) => {
         const parsedMessage = JSON.parse(message);
         const { gameId, gameState } = parsedMessage;
+        if (!gameRooms.has(gameId)) {
+            gameRooms.set(gameId, []);
+        }
+        const clients = gameRooms.get(gameId);
+        if (!clients.includes(ws)) {
+            clients.push(ws);
+        } 
+        client.lRange('activeGames', 0, -1)
+            .then(replies => {
+                const games = replies.map(reply => JSON.parse(reply)); // List of current games
+                const gameIndex = games.findIndex(game => game.gameId === gameId); // Game the request came from
 
-        // Get current game state from Redis
-        client.lrange('activeGames', 0, -1, (err, replies) => {
-            if (err) {
-                console.error('Redis get error:', err);
-                return;
-            }
-            const games = replies.map(reply => JSON.parse(reply));//List of current games
-            const gameIndex = games.findIndex(game => game.gameId === gameId);//Qame the request came from
-
-            if (gameIndex === -1) {
-                console.error('Game not found');
-                return;
-            }
-
-            let currentState = games[gameIndex].gameState;
-
-            // Update game state with new data
-            currentState = { ...currentState, ...gameState };
-
-            // Save updated game state to Redis
-            games[gameIndex].gameState = currentState;
-            client.lset('activeGames', gameIndex, JSON.stringify(games[gameIndex]), (err, reply) => {
-                if (err) {
-                    console.error('Redis set error:', err);
-                    return;
+                if (gameIndex === -1) {
+                    throw new Error('Game not found');
                 }
+
+                let currentState = games[gameIndex].gameState;
+
+                // Update game state with new data
+                currentState = { ...currentState, ...gameState };
+
+                // Save updated game state to Redis
+                games[gameIndex].gameState = currentState;
+                return client.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]))
+                    .then(() => currentState);
+            })
+            .then(updatedState => {
                 // Broadcast updated game state to all clients in the game room
-                broadcastGameState(gameId, currentState);
-            });
-        });
+                broadcastGameState(gameId, updatedState);
+            })
+            .catch(err => {
+                console.error('Redis error:', err);
+       });
     });
 
     ws.on('close', () => {
         console.log('Client disconnected');
-        // Remove client from all game rooms
-        gameRooms.forEach((clients, gameId) => {
-            gameRooms.set(gameId, clients.filter(client => client !== ws));
-        });
     });
 });
 
-// Broadcast game state to all clients in a specific game room
-const broadcastGameState = (gameId, data) => {
-    const message = JSON.stringify({ gameId, data });
+function broadcastGameState(gameId, gameState) {
     const clients = gameRooms.get(gameId) || [];
-    clients.forEach((client) => {
+    clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
+            client.send(JSON.stringify({ gameId, gameState }));
         }
     });
 };

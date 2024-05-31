@@ -8,18 +8,20 @@ export default class TicTacToe {
         this.currentPlayer = 'X';
         this.gameActive = true;
         console.log('Constructing now');
+        this._dataClient.onGameStateUpdate = (newGameState) => {
+            console.log('the new state',newGameState);
+            this.gameState = newGameState;
+            this.updateGrid();
+        };
+        this._dataClient.connectWebSocket();
     }
 
     updateGrid() {
         const gridCells = document.querySelectorAll('.cell');
-        console.log(gridCells);
-        const updateCell = cell => {
+        gridCells.forEach(cell => {
             const cellIndex = parseInt(cell.getAttribute('data-cell-index'));
-            console.log(this.gameState.game);
             cell.innerHTML = this.gameState.game[cellIndex];
-            console.log(cellIndex);
-        };
-        gridCells.forEach(updateCell);
+        });
     }
 
     saveGameState() {
@@ -28,7 +30,6 @@ export default class TicTacToe {
 
     handleCellClick(clickedCellEvent) {
         const clickedCell = clickedCellEvent.target;
-        console.log(this.gameState);
         const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
 
         if (this.gameState.game[clickedCellIndex] !== '' || !this.gameActive) {
@@ -53,14 +54,14 @@ export default class TicTacToe {
         let roundWon = false;
         const roundDraw = !this.gameState.game.includes('');
         const winConditions = [
-            [ 0, 1, 2 ],
-            [ 3, 4, 5 ],
-            [ 6, 7, 8 ],
-            [ 0, 3, 6 ],
-            [ 1, 4, 7 ],
-            [ 2, 5, 8 ],
-            [ 0, 4, 8 ],
-            [ 2, 4, 6 ]
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
         ];
 
         winConditions.forEach(winCondition => {
@@ -89,7 +90,7 @@ export default class TicTacToe {
     handleRestartGame() {
         this.gameActive = true;
         this.currentPlayer = 'X';
-        this.gameState.game = [ '', '', '', '', '', '', '', '', '' ];
+        this.gameState.game = ['', '', '', '', '', '', '', '', ''];
         document.querySelectorAll('.cell').forEach(cell => {
             cell.innerHTML = '';
         });
@@ -98,20 +99,20 @@ export default class TicTacToe {
 
     renderGame() {
         document.querySelector('#gameArea').innerHTML = `
-        <div class="grid">
-            <div data-cell-index="0" class="cell"></div>
-            <div data-cell-index="1" class="cell"></div>
-            <div data-cell-index="2" class="cell"></div>
-            <div data-cell-index="3" class="cell"></div>
-            <div data-cell-index="4" class="cell"></div>
-            <div data-cell-index="5" class="cell"></div>
-            <div data-cell-index="6" class="cell"></div>
-            <div data-cell-index="7" class="cell"></div>
-            <div data-cell-index="8" class="cell"></div>
-        </div>
-        <div class="buttons">
-            <button class="game--restart">Restart Game</button>
-        </div>
+            <div class="grid">
+                <div data-cell-index="0" class="cell"></div>
+                <div data-cell-index="1" class="cell"></div>
+                <div data-cell-index="2" class="cell"></div>
+                <div data-cell-index="3" class="cell"></div>
+                <div data-cell-index="4" class="cell"></div>
+                <div data-cell-index="5" class="cell"></div>
+                <div data-cell-index="6" class="cell"></div>
+                <div data-cell-index="7" class="cell"></div>
+                <div data-cell-index="8" class="cell"></div>
+            </div>
+            <div class="buttons">
+                <button class="game--restart">Restart Game</button>
+            </div>
         `;
         this.updateGrid();
         this.handleClickEvents();

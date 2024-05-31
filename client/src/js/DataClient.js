@@ -4,6 +4,7 @@ export default class DataClient {
         this.wsUrl = wsUrl;
         this.ws = null;
         this.gameId = null;
+        this.onGameStateUpdate = null; // Callback function to handle game state updates
     }
 
     connectWebSocket() {
@@ -27,9 +28,11 @@ export default class DataClient {
     }
 
     handleMessage(message) {
-        const { gameId, data } = message;
-        console.log(`Received game state update for game ${gameId}:`, data);
-        // Handle the received game state update
+        const { gameId, gameState } = message;
+        console.log(`Received game state update ${gameId}:`, gameState);
+        if (this.gameId === gameId && this.onGameStateUpdate) {
+            this.onGameStateUpdate(gameState);
+        }
     }
 
     async createGame(gameData) {
