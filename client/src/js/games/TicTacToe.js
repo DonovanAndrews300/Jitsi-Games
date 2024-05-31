@@ -1,10 +1,9 @@
 export default class TicTacToe {
-    constructor(gameRoom, dataClient) {
+    constructor(dataClient) {
         this.gameState = {
             game: ['', '', '', '', '', '', '', '', ''],
             currentPlayer: 'X', // Add currentPlayer to the gameState
         };
-        this.gameRoom = gameRoom;
         this._dataClient = dataClient;
         console.log('Constructing now');
         this._dataClient.onGameStateUpdate = (newGameState) => {

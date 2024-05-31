@@ -40,12 +40,11 @@ function joinGame() {
 }
 
 function injectGame(gameId, userId,gameType, dataClient) {
-    const gameRoom = { name: gameId, playerSession: userId };
     const link = document.createElement('link');
     import(`../js/games/${gameType}`)
         .then(module => {
             const Game = module.default;
-            const game = new Game(gameRoom, dataClient);
+            const game = new Game(dataClient);
             game.renderGame(game);
         });
     link.rel = 'stylesheet';
