@@ -1,6 +1,8 @@
-class TicTacToe {
+export default class TicTacToe {
     constructor(gameRoom, dataClient) {
-        this.gameState = false;
+        this.gameState = {
+            game: ['', '', '', '', '', '', '', '', '']
+        };
         this.gameRoom = gameRoom;
         this._dataClient = dataClient;
         this.currentPlayer = 'X';
@@ -24,7 +26,6 @@ class TicTacToe {
         this._dataClient.sendGameStateUpdate(this.gameState);
     }
 
-
     handleCellClick(clickedCellEvent) {
         const clickedCell = clickedCellEvent.target;
         console.log(this.gameState);
@@ -36,7 +37,6 @@ class TicTacToe {
 
         this.handleGameStateUpdate(clickedCell, clickedCellIndex);
         this.handleResult();
-        console.log(this.gameState);
     }
 
     handleGameStateUpdate(clickedCell, clickedCellIndex) {
@@ -98,21 +98,22 @@ class TicTacToe {
 
     renderGame() {
         document.querySelector('#gameArea').innerHTML = `
-       <div class="grid">
-<div data-cell-index="0" class="cell"></div>
-<div data-cell-index="1" class="cell"></div>
-<div data-cell-index="2" class="cell"></div>
-<div data-cell-index="3" class="cell"></div>
-<div data-cell-index="4" class="cell"></div>
-<div data-cell-index="5" class="cell"></div>
-<div data-cell-index="6" class="cell"></div>
-<div data-cell-index="7" class="cell"></div>
-<div data-cell-index="8" class="cell"></div>
-</div>
-<div class="buttons">
-<button class="game--restart">Restart Game</button>
-</div>
-`;
+        <div class="grid">
+            <div data-cell-index="0" class="cell"></div>
+            <div data-cell-index="1" class="cell"></div>
+            <div data-cell-index="2" class="cell"></div>
+            <div data-cell-index="3" class="cell"></div>
+            <div data-cell-index="4" class="cell"></div>
+            <div data-cell-index="5" class="cell"></div>
+            <div data-cell-index="6" class="cell"></div>
+            <div data-cell-index="7" class="cell"></div>
+            <div data-cell-index="8" class="cell"></div>
+        </div>
+        <div class="buttons">
+            <button class="game--restart">Restart Game</button>
+        </div>
+        `;
+        this.updateGrid();
         this.handleClickEvents();
     }
 
@@ -125,5 +126,3 @@ class TicTacToe {
         });
     }
 }
-
-export default TicTacToe;
