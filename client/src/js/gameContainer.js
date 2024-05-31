@@ -11,6 +11,10 @@ window.copyURL = function() {
     });
 }
 
+window.goBack = function() {
+   window.history.back();
+}
+
 function getUrlParams() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -25,7 +29,6 @@ function joinGame() {
     const userId = Math.random().toString(36).substr(2, 9);
     const _dataClient = new DataClient(config.apiUrl,config.wsUrl);
     _dataClient.joinGame(gameId, userId).then(() => {
-        alert("Game joined successfully");
         injectGame(gameId, userId,gameType,_dataClient);
     }).catch((err) => alert(err));
     
