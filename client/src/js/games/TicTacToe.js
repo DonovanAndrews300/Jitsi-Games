@@ -1,15 +1,14 @@
 export default class TicTacToe {
     constructor(gameRoom, dataClient) {
         this.gameState = {
-            game: ['', '', '', '', '', '', '', '', '']
+            game: ['', '', '', '', '', '', '', '', ''],
+            currentPlayer: 'X', // Add currentPlayer to the gameState
         };
         this.gameRoom = gameRoom;
         this._dataClient = dataClient;
-        this.currentPlayer = 'X';
-        this.gameActive = true;
         console.log('Constructing now');
         this._dataClient.onGameStateUpdate = (newGameState) => {
-            console.log('the new state',newGameState);
+            console.log('the new state', newGameState);
             this.gameState = newGameState;
             this.updateGrid();
         };
@@ -32,22 +31,23 @@ export default class TicTacToe {
         const clickedCell = clickedCellEvent.target;
         const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
 
-        if (this.gameState.game[clickedCellIndex] !== '' || !this.gameActive) {
+        if (this.gameState.game[clickedCellIndex] !== '') {
             return;
         }
 
         this.handleGameStateUpdate(clickedCell, clickedCellIndex);
         this.handleResult();
+        this.handlePlayerChange();
+        this.saveGameState();
     }
 
     handleGameStateUpdate(clickedCell, clickedCellIndex) {
-        this.gameState.game[clickedCellIndex] = this.currentPlayer;
-        this.saveGameState();
-        clickedCell.innerHTML = this.currentPlayer;
+        this.gameState.game[clickedCellIndex] = this.gameState.currentPlayer;
+        clickedCell.innerHTML = this.gameState.currentPlayer;
     }
 
     handlePlayerChange() {
-        this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+        this.gameState.currentPlayer = this.gameState.currentPlayer === 'X' ? 'O' : 'X';
     }
 
     handleResult() {
@@ -75,21 +75,18 @@ export default class TicTacToe {
         });
 
         if (roundWon) {
-            this.gameActive = false;
+            setTimeout(() => alert(`${this.gameState.currentPlayer} has won!`), 10);
             return;
         }
 
         if (roundDraw) {
-            this.gameActive = false;
+            setTimeout(() => alert('Draw!'), 10);
             return;
         }
-
-        this.handlePlayerChange();
     }
 
     handleRestartGame() {
-        this.gameActive = true;
-        this.currentPlayer = 'X';
+        this.gameState.currentPlayer = 'X';
         this.gameState.game = ['', '', '', '', '', '', '', '', ''];
         document.querySelectorAll('.cell').forEach(cell => {
             cell.innerHTML = '';
