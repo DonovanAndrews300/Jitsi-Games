@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
 
-const websocket = require('./websocket');
+const startWebsocket = require('./websocket');
 const routes = require('./routes');
 
 const app = express();
@@ -16,7 +16,7 @@ app.use(cors());
 app.use('/', routes);
 
 const server = http.createServer(app);
-websocket.attach(server);
+startWebsocket();
 
 server.listen(port, () => {
   console.log(`Running on port ${port}`);
