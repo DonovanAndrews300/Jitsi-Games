@@ -1,7 +1,6 @@
 // server/websocket.js
 const WebSocket = require('ws');
-const redis = require('redis');
-const redisClient = redis.createClient();
+const redisClient = require('./redisClient');
 
 const gameRooms = new Map();
 
