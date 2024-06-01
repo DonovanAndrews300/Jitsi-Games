@@ -1,0 +1,13 @@
+{
+  "name": "jitsi-games",
+  "version": "1.0.0",
+  "description": "An app that allows you to play html games with your friends! \\ Built with:\\ -Vite\\ -Javascript\\ -Express\\ -Redis\\ -Websockets\\ -(Soon to come!)JitsiMeet API:https://github.com/jitsi/jitsi-meet/blob/master/doc/api.md \\",
+  "main": "index.js",
+  "scripts": {
+    "start":"cd server/ && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
