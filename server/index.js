@@ -9,7 +9,7 @@ const websocket = require('./websocket');
 const routes = require('./routes');
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 app.use(bodyParser.json());
 app.use(cors());
