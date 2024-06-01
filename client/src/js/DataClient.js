@@ -39,7 +39,7 @@ export default class DataClient {
 
     async createGame(gameData) {
         try {
-            const response = await fetch(`${this.apiUrl}/game`, {
+            const response = await fetch(`${this.apiUrl}game`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ export default class DataClient {
 
     async leaveGame(gameId, playerId) {
         try {
-            const response = await fetch(`${this.apiUrl}/leaveGame`, {
+            const response = await fetch(`${this.apiUrl}leaveGame`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ export default class DataClient {
     
     async joinGame(gameId, playerId) {
         try {
-            const response = await fetch(`${this.apiUrl}/joinGame`, {
+            const response = await fetch(`${this.apiUrl}joinGame`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
