@@ -1,5 +1,5 @@
-import DataClient from './DataClient';
-import { config } from './config';
+import DataClient from './DataClient.js';
+import { config } from './config.js';
 
 function generateRandomId() {
     return Math.random().toString(36).substr(2, 9);
