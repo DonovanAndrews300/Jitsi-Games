@@ -5,7 +5,7 @@ function generateRandomId() {
     return Math.random().toString(36).substr(2, 9);
 }
 
-    function createNewGame() {
+window.createNewGame = function createNewGame() {
     const gameId = generateRandomId();
     const gameSelect = document.getElementById('game-select');
     const selectedGame = gameSelect.value;
