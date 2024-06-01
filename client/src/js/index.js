@@ -4,8 +4,10 @@ import { config } from './config';
 function generateRandomId() {
     return Math.random().toString(36).substr(2, 9);
 }
+const btn = document.getElementById("create-game-button");
 
-window.createNewGame = function createNewGame() {
+
+btn.addEventListener("click", function () {
     const gameId = generateRandomId();
     const gameSelect = document.getElementById('game-select');
     const selectedGame = gameSelect.value;
@@ -19,4 +21,4 @@ window.createNewGame = function createNewGame() {
     _dataClient.createGame(protoGame).then(() => {
         window.location.href = `/src/pages/gameContainer.html?id=${gameId}&gameType=${selectedGame}`;
     });
-}
+  });
