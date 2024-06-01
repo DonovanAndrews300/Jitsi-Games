@@ -11,8 +11,8 @@ window.copyURL = function() {
     });
 }
 
-window.goBack = function() {
-   window.history.back();
+window.goHome= function() {
+    window.location.href = `/src/index.html`;
 }
 
 function getUrlParams() {

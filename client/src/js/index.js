@@ -17,6 +17,6 @@ window.createNewGame= function() {
 
     const _dataClient = new DataClient(config.apiUrl, config.wsUrl);
     _dataClient.createGame(protoGame).then(() => {
-        window.location.href = `./src/pages/gameContainer.html?id=${gameId}&gameType=${selectedGame}`;
+        window.location.href = `/src/pages/gameContainer.html?id=${gameId}&gameType=${selectedGame}`;
     });
 }
