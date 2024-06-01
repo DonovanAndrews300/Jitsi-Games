@@ -1,10 +1,11 @@
 export default class DataClient {
-    constructor(apiUrl, wsUrl) {
+    constructor(apiUrl, wsUrl, playerId) {
         this.apiUrl = apiUrl;
         this.wsUrl = wsUrl;
         this.ws = null;
         this.gameId = null;
-        this.onGameStateUpdate = null; // Callback function to handle game state updates
+        this.playerId = playerId;
+        this.onGameStateUpdate = null; // Callback function to handle game state updates. This can vary depending on the game being played
     }
 
     connectWebSocket() {
@@ -12,6 +13,7 @@ export default class DataClient {
 
         this.ws.onopen = () => {
             console.log('WebSocket connection established');
+            this.initGameState();
         };
 
         this.ws.onmessage = (event) => {
@@ -94,6 +96,7 @@ export default class DataClient {
             }
             const result = await response.json();
             this.gameId = gameId;
+            this.initGameState(); // Initialize game state after joining a game
             return result;
         } catch (error) {
             console.error('Error joining game:', error);
@@ -103,7 +106,16 @@ export default class DataClient {
 
     sendGameStateUpdate(gameState) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            const message = JSON.stringify({ gameId: this.gameId, gameState });
+            const message = JSON.stringify({ type: 'UPDATE_GAME_STATE', gameId: this.gameId, playerId: this.playerId, gameState });
+            this.ws.send(message);
+        } else {
+            console.error('WebSocket is not open');
+        }
+    }
+
+    initGameState() {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            const message = JSON.stringify({ type: 'JOIN_GAME', gameId: this.gameId, playerId: this.playerId });
             this.ws.send(message);
         } else {
             console.error('WebSocket is not open');

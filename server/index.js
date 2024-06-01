@@ -3,15 +3,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const redis = require('redis');
 const cors = require('cors');
-const path = require('path');
 const WebSocket = require('ws');
 
 const app = express();
 const port = 4000;
 const client = redis.createClient();
-client.connect()
+client.connect();
 const wss = new WebSocket.Server({ port: 8080 });
-const gameRooms = new Map();// Better performance for lotta gamerooms++
+const gameRooms = new Map();
 
 client.on('error', (err) => {
     console.error('Redis error:', err);
@@ -25,7 +24,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-// Create a new game 
 app.post('/game', (req, res) => {
     const gameData = req.body;
     client.lPush('activeGames', JSON.stringify(gameData))
@@ -48,7 +46,7 @@ app.post('/joinGame', (req, res) => {
             const maxPlayers = 2;
             if (gameIndex !== -1) {
                 if (games[gameIndex].players.length >= maxPlayers) {
-                    throw new Error("Too many players");                    
+                    throw new Error("Too many players");
                 }
                 games[gameIndex].players.push(playerId);
                 return client.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]))
@@ -82,7 +80,7 @@ app.post('/leaveGame', (req, res) => {
                     res.status(404).json({ error: "Player not found in the game" });
                     return;
                 }
-                const originalGame = JSON.stringify(games[gameIndex]); // Save the original game state as a string
+                const originalGame = JSON.stringify(games[gameIndex]);
                 games[gameIndex].players.splice(playerIndex, 1);
                 if (games[gameIndex].players.length === 0) {
                     // Remove the game if there are no players left
@@ -119,46 +117,51 @@ app.post('/leaveGame', (req, res) => {
 
 wss.on('connection', (ws) => {
     console.log('New client connected');
-    ws.on('message', (message) => {
+    ws.on('message', async (message) => {
         const parsedMessage = JSON.parse(message);
-        const { gameId, gameState } = parsedMessage;
+        const { type, gameId, playerId, gameState } = parsedMessage;
         if (!gameRooms.has(gameId)) {
             gameRooms.set(gameId, []);
         }
         const clients = gameRooms.get(gameId);
         if (!clients.includes(ws)) {
             clients.push(ws);
-        } 
-        client.lRange('activeGames', 0, -1)
-            .then(replies => {
-                const games = replies.map(reply => JSON.parse(reply)); // List of current games
-                const gameIndex = games.findIndex(game => game.gameId === gameId); // Game the request came from
+        }
+        try {
+            const replies = await client.lRange('activeGames', 0, -1);
+            const games = replies.map(reply => JSON.parse(reply));
+            const gameIndex = games.findIndex(game => game.gameId === gameId);
 
-                if (gameIndex === -1) {
-                    throw new Error('Game not found');
-                }
+            if (gameIndex === -1) {
+                throw new Error('Game not found');
+            }
 
-                let currentState = games[gameIndex].gameState;
+            let currentState = games[gameIndex].gameState;
 
-                // Update game state with new data
+            if (type === 'JOIN_GAME' && currentState && Object.keys(currentState).length > 0) {
+                ws.send(JSON.stringify({ gameId, gameState: currentState }));
+            } else if (type === 'UPDATE_GAME_STATE') {
                 currentState = { ...currentState, ...gameState };
-
-                // Save updated game state to Redis
                 games[gameIndex].gameState = currentState;
-                return client.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]))
-                    .then(() => currentState);
-            })
-            .then(updatedState => {
-                // Broadcast updated game state to all clients in the game room
-                broadcastGameState(gameId, updatedState);
-            })
-            .catch(err => {
-                console.error('Redis error:', err);
-       });
+                await client.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]));
+                broadcastGameState(gameId, currentState);
+            }
+        } catch (err) {
+           console.error('Redis error:', err);
+       }
     });
 
     ws.on('close', () => {
         console.log('Client disconnected');
+        gameRooms.forEach((clients, gameId) => {
+            const index = clients.indexOf(ws);
+            if (index !== -1) {
+                clients.splice(index, 1);
+                if (clients.length === 0) {
+                    gameRooms.delete(gameId);
+                }
+            }
+        });
     });
 });
 
@@ -169,7 +172,6 @@ function broadcastGameState(gameId, gameState) {
             client.send(JSON.stringify({ gameId, gameState }));
         }
     });
-};
-
+}
 
 app.listen(port, () => console.log(`Running on port ${port}`));
