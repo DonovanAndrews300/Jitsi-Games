@@ -1,11 +1,10 @@
-// server/websocket.js
 const WebSocket = require('ws');
 const redisClient = require('./redisClient');
 
 const gameRooms = new Map();
 
-function startWebsocket() {
-  const wss = new WebSocket.Server({ port: 8080 });
+function attach(server) {
+  const wss = new WebSocket.Server({ server });
 
   wss.on('connection', (ws) => {
     console.log('New client connected');
@@ -48,7 +47,7 @@ function startWebsocket() {
     });
 
     ws.on('close', () => {
-      console.log('client disconnected');
+      console.log('Client disconnected');
       gameRooms.forEach((clients, gameId) => {
         const index = clients.indexOf(ws);
         if (index !== -1) {
@@ -71,4 +70,4 @@ function startWebsocket() {
   }
 }
 
-module.exports =  startWebsocket;
+module.exports = { attach };
