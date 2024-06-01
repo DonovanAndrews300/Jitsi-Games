@@ -1,5 +1,5 @@
-import DataClient from './DataClient';
-import { config } from './config';
+import DataClient from './DataClient.js';
+import { config } from './config.js';
 
 window.copyURL = function() {
     const url = window.location.href;
@@ -40,7 +40,7 @@ function joinGame() {
 
 function injectGame(gameId, userId,gameType, dataClient) {
     const link = document.createElement('link');
-    import(`../js/games/${gameType}`)
+    import(`../js/games/${gameType}.js`)
         .then(module => {
             const Game = module.default;
             const game = new Game(dataClient);
