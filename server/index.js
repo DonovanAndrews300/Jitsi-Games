@@ -15,7 +15,7 @@ app.use('/', routes);
 
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+  .listen(process.env.PORT, () => console.log(`Listening on ${process.env.PORT}`));
 
 attach(server);
 
