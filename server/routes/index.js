@@ -1,5 +1,6 @@
 // server/routes/index.js
 const express = require('express');
+
 const gameRoutes = require('./game');
 const joinGameRoutes = require('./joinGame');
 const leaveGameRoutes = require('./leaveGame');

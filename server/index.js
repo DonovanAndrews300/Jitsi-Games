@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
+
 const websocket = require('./websocket');
 const routes = require('./routes');
 
@@ -18,5 +19,5 @@ const server = http.createServer(app);
 websocket.attach(server);
 
 server.listen(port, () => {
-    console.log(`Running on port ${port}`);
+  console.log(`Running on port ${port}`);
 });
