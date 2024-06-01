@@ -1,4 +1,3 @@
-import TicTacToe from '../js/games/TicTacToe';
 import DataClient from './DataClient';
 import { config } from './config';
 
