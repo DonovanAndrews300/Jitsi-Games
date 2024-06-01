@@ -4,7 +4,7 @@ const redisClient = require('./redisClient');
 
 const gameRooms = new Map();
 
-function startWebsocket(server) {
+function startWebsocket() {
   const wss = new WebSocket.Server({ port: 8080 });
 
   wss.on('connection', (ws) => {
@@ -71,4 +71,4 @@ function startWebsocket(server) {
   }
 }
 
-module.exports = { startWebsocket };
+module.exports =  startWebsocket;
