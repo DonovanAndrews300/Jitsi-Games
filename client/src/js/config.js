@@ -1,4 +1,4 @@
 export const config = {
-    apiUrl:'http://localhost:4000',
+    apiUrl:'https://jitsigames-2e12a109cdf9.herokuapp.com/',
     wsUrl:'ws://localhost:8080'
 }
