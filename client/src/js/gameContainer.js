@@ -11,7 +11,7 @@ window.copyURL = function() {
 }
 
 window.goHome= function() {
-    window.location.href = `/src/index.html`;
+    window.location.href = `https://jitsi-games.netlify.app/`;
 }
 
 function getUrlParams() {
