@@ -5,7 +5,7 @@ const gameRooms = new Map();
 
 function attach(server) {
   const wss = new WebSocket.Server({ server });
-
+console.log("attached");
   wss.on('connection', (ws) => {
     console.log('New client connected');
     ws.on('message', async (message) => {
