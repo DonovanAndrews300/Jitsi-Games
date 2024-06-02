@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const http = require('http');
 
 const { attach } = require('./websocket');
 const routes = require('./routes');
@@ -13,8 +14,10 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/', routes);
 
-const server = express()
-  .listen(process.env.PORT, () => console.log(`Listening on ${process.env.PORT}`));
+const server = http.createServer(app);
 
 attach(server);
 
+server.listen(port, () => {
+  console.log(`Running on port ${port}`);
+});
