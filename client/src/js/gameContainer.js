@@ -1,6 +1,8 @@
 import DataClient from './DataClient.js';
 import { config } from './config.js';
 
+const _dataClient = new DataClient(config.apiUrl,config.wsUrl);
+
 window.copyURL = function() {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
@@ -26,7 +28,6 @@ function joinGame() {
     const { gameId, gameType } = getUrlParams(); 
     console.log(gameId);
     const userId = Math.random().toString(36).substr(2, 9);
-    const _dataClient = new DataClient(config.apiUrl,config.wsUrl);
     _dataClient.joinGame(gameId, userId).then(() => {
         injectGame(gameId, userId,gameType,_dataClient);
     }).catch((err) => alert(err));
@@ -53,3 +54,4 @@ function injectGame(gameId, userId,gameType, dataClient) {
 
 // Call joinGame when the script loads
 joinGame();
+_dataClient.initVideoCall()

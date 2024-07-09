@@ -1,15 +1,29 @@
 const WebSocket = require('ws');
+
 const redisClient = require('./redisClient');
 
 const gameRooms = new Map();
 
 function attach(server) {
-  const wss = new WebSocket.Server({ server });
-console.log("attached");
+  const wss = new WebSocket.Server({ noServer: true });
+  console.log("WebSocket server attached");
+
   wss.on('connection', (ws) => {
     console.log('New client connected');
     ws.on('message', async (message) => {
       const parsedMessage = JSON.parse(message);
+      console.log(parsedMessage);
+      if (parsedMessage.type === 'ADD_PEER') {
+        ws.peerId = parsedMessage.peerId;
+        console.log('Added peer',ws.peerId);
+
+        wss.clients.forEach((client) => {
+          if (client !== ws && client.peerId) {
+            client.send(JSON.stringify({ type: 'INCOMING_CALL', peerId: ws.peerId }));
+          }
+        });
+      }
+  
       const { type, gameId, playerId, gameState } = parsedMessage;
 
       if (!gameRooms.has(gameId)) {
@@ -68,6 +82,19 @@ console.log("attached");
       }
     });
   }
+
+  // Handle upgrade requests for WebSocket
+  server.on('upgrade', (request, socket, head) => {
+    if (request.url === '/ws') {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    } else {
+      socket.destroy();
+    }
+  });
+
+  return wss;
 }
 
 module.exports = { attach };
