@@ -85,7 +85,7 @@ function attach(server) {
 
   // Handle upgrade requests for WebSocket
   server.on('upgrade', (request, socket, head) => {
-    if (request.url === '/ws') {
+    if (request.url === '/wss') {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
       });
