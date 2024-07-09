@@ -1,6 +1,6 @@
+
 require('dotenv').config();
 const express = require('express');
-const { ExpressPeerServer } = require('peer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
@@ -27,17 +27,3 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// Set up PeerJS server on a separate Express app
-const peerApp = express();
-peerApp.use(cors());
-
-const peerServer = http.createServer(peerApp);
-const peerPort = 4000;
-const options = { debug: true };
-
-peerApp.use('/peerjs', ExpressPeerServer(peerServer, options));
-
-// Start PeerJS server
-peerServer.listen(peerPort, () => {
-  console.log(`PeerJS server is running on port ${peerPort}`);
-});
