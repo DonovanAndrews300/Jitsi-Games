@@ -130,7 +130,7 @@ export default class DataClient {
             console.error('WebSocket is not open');
         }
     }
-    
+
     async initVideoCall() {
         try {
             const localVideo = document.getElementById("localVideo");
@@ -138,8 +138,8 @@ export default class DataClient {
             localVideo.srcObject = this.localStream;
 
             this.peer = new Peer(undefined, {
-                host: 'localhost',
-                port: 4000,
+                host: 'jitsigames-2e12a109cdf9.herokuapp.com',
+                port: 443,
                 path: '/peerjs',
                 debug: 3
             });
