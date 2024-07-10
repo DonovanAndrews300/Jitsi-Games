@@ -138,9 +138,8 @@ export default class DataClient {
             localVideo.srcObject = this.localStream;
 
             this.peer = new Peer(undefined, {
+                secure:true,
                 host: 'https://jitsi-game-peer-server-541f60a90bdf.herokuapp.com',
-                port: 443,
-                debug: 3
             });
 
             this.peer.on('open', id => {
