@@ -24,6 +24,7 @@ export default class DataClient {
         };
 
         this.ws.onclose = () => {
+            this.peer.close();
             console.log('WebSocket connection closed');
         };
 
