@@ -5,7 +5,7 @@ const redisClient = require('./redisClient');
 const gameRooms = new Map();
 
 function attach(server) {
-  const wss = new WebSocket.Server({ noServer: true });
+  const wss = new WebSocket.Server({ server });
   console.log("WebSocket server attached");
 
   wss.on('connection', (ws) => {
@@ -83,16 +83,7 @@ function attach(server) {
     });
   }
 
-  // Handle upgrade requests for WebSocket
-  server.on('upgrade', (request, socket, head) => {
-    if (request.url === '/wss') {
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request);
-      });
-    } else {
-      socket.destroy();
-    }
-  });
+
 
   return wss;
 }
