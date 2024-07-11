@@ -6,7 +6,7 @@ Built with:\
 -Express\
 -Redis\
 -Websockets\
--(Soon to come!)JitsiMeet API:https://github.com/jitsi/jitsi-meet/blob/master/doc/api.md \
+-WebRTC(Peer.js)\
 
 ## Installation
 ```sh
