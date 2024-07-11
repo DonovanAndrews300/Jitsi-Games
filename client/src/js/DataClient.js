@@ -5,7 +5,7 @@ export default class DataClient {
         this.ws = null;
         this.localStream = null;
         this.gameId = null;
-        this.playerId = playerId;
+        this.playerId = null;
         this.onGameStateUpdate = null; // Callback function to handle game state updates
         this.peer = null;
     }
@@ -24,7 +24,7 @@ export default class DataClient {
         };
 
         this.ws.onclose = () => {
-            this.peer.close();
+            this.peer.destroy();
             console.log('WebSocket connection closed');
         };
 

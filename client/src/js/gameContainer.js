@@ -26,8 +26,8 @@ function getUrlParams() {
 
 function joinGame() {
     const { gameId, gameType } = getUrlParams(); 
-    console.log(gameId);
     const userId = Math.random().toString(36).substr(2, 9);
+    _dataClient.playerId = userId;
     _dataClient.joinGame(gameId, userId).then(() => {
         injectGame(gameId, userId,gameType,_dataClient);
     }).catch((err) => alert(err));
