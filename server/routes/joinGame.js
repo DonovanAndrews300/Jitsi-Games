@@ -13,7 +13,7 @@ router.post('/joinGame', (req, res) => {
       const gameIndex = games.findIndex(game => game.gameId === gameId);
       const maxPlayers = 2;
       if (gameIndex !== -1) {
-        if (games[gameIndex].players.length > maxPlayers) {
+        if (games[gameIndex].players.length >= maxPlayers) {
           throw new Error("Too many players");
         }
         games[gameIndex].players.push(playerId);
