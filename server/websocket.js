@@ -16,7 +16,7 @@ function attach(server) {
         ws.peerId = parsedMessage.peerId;
 
         wss.clients.forEach((client) => {
-          if (client !== ws && client.peerId) {
+          if (client !== ws && client.peerId && ws.gameId === client.gameId) {
             client.send(JSON.stringify({ type: 'INCOMING_CALL', peerId: ws.peerId }));
           }
         });
