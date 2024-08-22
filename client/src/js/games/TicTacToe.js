@@ -1,17 +1,21 @@
-export default class TicTacToe {
+import Game from './Game.js';
+
+export default class TicTacToe extends Game {
     constructor(dataClient) {
-        this.gameState = {
+        super(dataClient);
+        console.log('Constructing TicTacToe now');
+    }
+
+    // Initialize the TicTacToe-specific game state
+    initializeGameState() {
+        return {
             game: ['', '', '', '', '', '', '', '', ''],
-            currentPlayer: 'X', // Add currentPlayer to the gameState
+            currentPlayer: 'X' 
         };
-        this._dataClient = dataClient;
-        console.log('Constructing now');
-        this._dataClient.onGameStateUpdate = (newGameState) => {
-            console.log('the new state', newGameState);
-            this.gameState = newGameState;
-            this.updateGrid();
-        };
-        this._dataClient.connectWebSocket();
+    }
+
+    updateUI() {
+        this.updateGrid();
     }
 
     updateGrid() {
@@ -22,10 +26,6 @@ export default class TicTacToe {
         });
     }
 
-    saveGameState() {
-        this._dataClient.sendGameStateUpdate(this.gameState);
-    }
-
     handleCellClick(clickedCellEvent) {
         const clickedCell = clickedCellEvent.target;
         const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
@@ -34,15 +34,11 @@ export default class TicTacToe {
             return;
         }
 
-        this.handleGameStateUpdate(clickedCell, clickedCellIndex);
+        this.gameState.game[clickedCellIndex] = this.gameState.currentPlayer;
         this.handleResult();
         this.handlePlayerChange();
+        this.updateGrid();
         this.saveGameState();
-    }
-
-    handleGameStateUpdate(clickedCell, clickedCellIndex) {
-        this.gameState.game[clickedCellIndex] = this.gameState.currentPlayer;
-        clickedCell.innerHTML = this.gameState.currentPlayer;
     }
 
     handlePlayerChange() {
@@ -64,10 +60,7 @@ export default class TicTacToe {
         ];
 
         winConditions.forEach(winCondition => {
-            const a = this.gameState.game[winCondition[0]];
-            const b = this.gameState.game[winCondition[1]];
-            const c = this.gameState.game[winCondition[2]];
-
+            const [a, b, c] = winCondition.map(index => this.gameState.game[index]);
             if (a === b && b === c && a !== '') {
                 roundWon = true;
             }
@@ -82,15 +75,6 @@ export default class TicTacToe {
             setTimeout(() => alert('Draw!'), 10);
             return;
         }
-    }
-
-    handleRestartGame() {
-        this.gameState.currentPlayer = 'X';
-        this.gameState.game = ['', '', '', '', '', '', '', '', ''];
-        document.querySelectorAll('.cell').forEach(cell => {
-            cell.innerHTML = '';
-        });
-        this.saveGameState();
     }
 
     renderGame() {
