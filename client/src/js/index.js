@@ -11,6 +11,7 @@ btn.addEventListener("click", function () {
     const gameId = generateRandomId();
     const gameSelect = document.getElementById('game-select');
     const selectedGame = gameSelect.value;
+    console.log(selectedGame);
     const protoGame = {
         gameId: gameId,
         players: [],
