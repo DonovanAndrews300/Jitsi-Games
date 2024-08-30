@@ -140,6 +140,8 @@ export default class DataClient {
 
             this.peer = new Peer(undefined, {
                 secure:true,
+                path:'/peerjs',
+                port: 443,
                 host: 'jitsi-game-peer-server.onrender.com',
             });
 
