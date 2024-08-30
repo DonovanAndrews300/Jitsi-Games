@@ -141,7 +141,7 @@ export default class DataClient {
             this.peer = new Peer(undefined, {
                 secure:true,
                 path:'/peerjs',
-                host: 'jitsi-game-peer-server.onrender.com',
+                host: 'https://jitsi-game-peer-server.onrender.com',
             });
 
             this.peer.on('open', id => {
