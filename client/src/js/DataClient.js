@@ -141,7 +141,8 @@ export default class DataClient {
             this.peer = new Peer(undefined, {
                 secure:true,
                 path:'/peerjs',
-                host: 'jitsi-game-peer-server-541f60a90bdf.herokuapp.com',
+                port: 443,
+                host: 'jitsi-game-peer-server.onrender.com',
             });
 
             this.peer.on('open', id => {
