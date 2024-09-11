@@ -11,7 +11,6 @@ export default class Game {
         };
 
         this._dataClient.connectWebSocket();
-        this.renderGame();
     }
 
     saveGameState() {
