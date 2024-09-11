@@ -5,7 +5,7 @@ export default class DataClient {
         this.ws = null;
         this.localStream = null;
         this.gameId = null;
-        this.playerId = null;
+        this.playerId = playerId;
         this.onGameStateUpdate = null; // Callback function to handle game state updates
         this.peer = null;
     }
@@ -24,7 +24,9 @@ export default class DataClient {
         };
 
         this.ws.onclose = () => {
-            this.peer.destroy();
+            if (this.peer) {
+                this.peer.destroy();
+            }
             console.log('WebSocket connection closed');
         };
 
@@ -35,19 +37,49 @@ export default class DataClient {
 
     handleMessage(message) {
         if (message.type === 'INCOMING_CALL') {
-            const { peerId } = message;
-            const call = this.peer.call(peerId, this.localStream);
-            call.on('stream', remoteStream => {
-            const remoteVideo = document.getElementById("remoteVideo");
-            remoteVideo.srcObject = remoteStream;
-        });
-}
+            this.handleIncomingCall(message);
+        }
+
         if (message.gameState) {
             const { gameId, gameState } = message;
             if (this.gameId === gameId && this.onGameStateUpdate) {
-                this.onGameStateUpdate(gameState);
+                // Merge the partial game state into the existing local game state
+                this.mergePartialState(gameState); 
             }
         }
+    }
+
+    mergePartialState(partialState) {
+        if (!this.gameState) {
+            this.gameState = {};
+        }
+
+        Object.keys(partialState).forEach((key) => {
+            if(Array.isArray(partialState[key])){
+                this.gameState[key] = partialState[key];
+            }
+            else if (typeof partialState[key] === 'object' && this.gameState[key]) {
+                // For objects like paddles or ball, merge their properties
+                this.gameState[key] = { ...this.gameState[key], ...partialState[key] };
+            } else {
+                // For primitive values like scores, simply overwrite them
+                this.gameState[key] = partialState[key];
+            }
+        });
+console.log("j",this.gameState)
+        // After merging, trigger the callback to update the UI
+        if (this.onGameStateUpdate) {
+            this.onGameStateUpdate(this.gameState);
+        }
+    }
+
+    handleIncomingCall(message) {
+        const { peerId } = message;
+        const call = this.peer.call(peerId, this.localStream);
+        call.on('stream', remoteStream => {
+            const remoteVideo = document.getElementById("remoteVideo");
+            remoteVideo.srcObject = remoteStream;
+        });
     }
 
     async createGame(gameData) {
@@ -59,6 +91,7 @@ export default class DataClient {
                 },
                 body: JSON.stringify(gameData)
             });
+
             const result = await response.json();
             this.gameId = result.gameId;
             return result;
@@ -77,13 +110,15 @@ export default class DataClient {
                 },
                 body: JSON.stringify({ gameId, playerId })
             });
+
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                throw new Error(`HTTP error! Status: ${response.status}, message: ${errorText}`);
             }
+
             const result = await response.json();
             if (this.gameId === gameId) {
-                this.gameId = null; // Clear the gameId if the player leaves the game they are currently in
+                this.gameId = null; // Clear the gameId if leaving the current game
             }
             return result;
         } catch (error) {
@@ -91,6 +126,7 @@ export default class DataClient {
             throw error;
         }
     }
+
     async joinGame(gameId, playerId) {
         try {
             const response = await fetch(`${this.apiUrl}joinGame`, {
@@ -100,13 +136,15 @@ export default class DataClient {
                 },
                 body: JSON.stringify({ gameId, playerId })
             });
+
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                throw new Error(`HTTP error! Status: ${response.status}, message: ${errorText}`);
             }
+
             const result = await response.json();
             this.gameId = gameId;
-            this.initGameState(); // Initialize game state after joining a game
+            this.initGameState(); // Initialize game state after joining
             return result;
         } catch (error) {
             console.error('Error joining game:', error);
@@ -116,7 +154,12 @@ export default class DataClient {
 
     sendGameStateUpdate(gameState) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            const message = JSON.stringify({ type: 'UPDATE_GAME_STATE', gameId: this.gameId, playerId: this.playerId, gameState });
+            const message = JSON.stringify({ 
+                type: 'UPDATE_GAME_STATE', 
+                gameId: this.gameId, 
+                playerId: this.playerId, 
+                gameState 
+            });
             this.ws.send(message);
         } else {
             console.error('WebSocket is not open');
@@ -125,7 +168,11 @@ export default class DataClient {
 
     initGameState() {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            const message = JSON.stringify({ type: 'JOIN_GAME', gameId: this.gameId, playerId: this.playerId });
+            const message = JSON.stringify({ 
+                type: 'JOIN_GAME', 
+                gameId: this.gameId, 
+                playerId: this.playerId 
+            });
             this.ws.send(message);
         } else {
             console.error('WebSocket is not open');
@@ -138,32 +185,35 @@ export default class DataClient {
             this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideo.srcObject = this.localStream;
 
-            this.peer = new Peer(undefined, {
-                secure:true,
-                path:'/peerjs',
-                port: 443,
-                host: 'jitsi-game-peer-server.onrender.com',
-            });
+            this.setupPeerConnection();
+        } catch (error) {
+            console.error('Error accessing media devices:', error);
+        }
+    }
 
-            this.peer.on('open', id => {
-                console.log('Peer connection open with ID:', id);
-                this.ws.send(JSON.stringify({ type: "ADD_PEER", peerId: id }))
-            });
+    setupPeerConnection() {
+        this.peer = new Peer(undefined, {
+            secure: true,
+            path: '/peerjs',
+            port: 443,
+            host: 'jitsi-game-peer-server.onrender.com',
+        });
 
-            this.peer.on('call', (call) =>{
-               call.answer(this.localStream)
-               call.on('stream', (remoteStream) => {
+        this.peer.on('open', id => {
+            console.log('Peer connection open with ID:', id);
+            this.ws.send(JSON.stringify({ type: "ADD_PEER", peerId: id }));
+        });
+
+        this.peer.on('call', (call) => {
+            call.answer(this.localStream);
+            call.on('stream', (remoteStream) => {
                 const remoteVideo = document.getElementById("remoteVideo");
                 remoteVideo.srcObject = remoteStream;
-               })
-            })
-
-            this.peer.on('error', err => {
-                console.error('PeerJS error:', err);
             });
+        });
 
-        } catch (error) {
-            console.error('Error accessing media devices.', error);
-        }
+        this.peer.on('error', err => {
+            console.error('PeerJS error:', err);
+        });
     }
 }
