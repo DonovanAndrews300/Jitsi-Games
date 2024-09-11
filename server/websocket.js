@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
-const redisClient = require('./redisClient');
 
+const redisClient = require('./redisClient');
 const gameRooms = new Map();
 
 function attach(server) {
@@ -9,9 +9,11 @@ function attach(server) {
 
   wss.on('connection', (ws) => {
     console.log('New client connected');
+    
     ws.on('message', async (message) => {
       const parsedMessage = JSON.parse(message);
       const { type, gameId, playerId, gameState } = parsedMessage;
+      
       if (type === 'ADD_PEER') {
         ws.peerId = parsedMessage.peerId;
 
@@ -53,11 +55,12 @@ function attach(server) {
         if (type === 'JOIN_GAME' && currentState && Object.keys(currentState).length > 0) {
           ws.send(JSON.stringify({ gameId, gameState: currentState }));
         } else if (type === 'UPDATE_GAME_STATE') {
+          const updatedKeys = Object.keys(gameState); // Track updated keys for partial broadcast
           currentState = { ...currentState, ...gameState };
           games[gameIndex].gameState = currentState;
 
           await redisClient.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]));
-          broadcastGameState(gameId, currentState);
+          broadcastGameState(gameId, currentState, updatedKeys); // Pass updatedKeys for partial state update
         }
       } catch (err) {
         console.error('Redis error:', err);
@@ -70,16 +73,18 @@ function attach(server) {
         const index = clients.indexOf(ws);
         if (index !== -1) {
           clients.splice(index, 1);
-          if (clients.length===0) {
+          if (clients.length === 0) {
             gameRooms.delete(gameId);
           }
         }
       });
+
       if (ws.playerId) {
         try {
           const replies = await redisClient.lRange('activeGames', 0, -1);
           const games = replies.map(reply => JSON.parse(reply));
           const gameIndex = games.findIndex(game => game.gameId === ws.gameId);
+          
           if (gameIndex !== -1) {
             const game = games[gameIndex];
             const playerIndex = game.players.indexOf(ws.playerId);
@@ -88,7 +93,7 @@ function attach(server) {
             }
             games[gameIndex] = game;
             await redisClient.lSet('activeGames', gameIndex, JSON.stringify(games[gameIndex]));
-            broadcastGameState(ws.gameId, game.gameState);
+            broadcastGameState(ws.gameId, game.gameState, Object.keys(game.gameState)); // Pass full game state keys on disconnect
           }
         } catch (err) {
           console.error('Redis error:', err);
@@ -97,11 +102,16 @@ function attach(server) {
     });
   });
 
-  function broadcastGameState(gameId, gameState) {
+  function broadcastGameState(gameId, gameState, updatedKeys) {
     const clients = gameRooms.get(gameId) || [];
+    const partialState = updatedKeys.reduce((acc, key) => {
+      acc[key] = gameState[key];
+      return acc;
+    }, {});
+
     clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ gameId, gameState }));
+        client.send(JSON.stringify({ gameId, gameState: partialState }));
       }
     });
   }

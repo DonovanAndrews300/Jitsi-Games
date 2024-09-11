@@ -22,7 +22,9 @@ export default class TicTacToe extends Game {
         const gridCells = document.querySelectorAll('.cell');
         gridCells.forEach(cell => {
             const cellIndex = parseInt(cell.getAttribute('data-cell-index'));
-            cell.innerHTML = this.gameState.game[cellIndex];
+            if (cell.innerHTML !== this.gameState.game[cellIndex]) {
+                cell.innerHTML = this.gameState.game[cellIndex]; // Update only changed cells
+            }
         });
     }
 
@@ -38,7 +40,7 @@ export default class TicTacToe extends Game {
         this.handleResult();
         this.handlePlayerChange();
         this.updateGrid();
-        this.saveGameState();
+        this.saveGameState(); // Call inherited saveGameState to send full game state
     }
 
     handlePlayerChange() {
@@ -67,7 +69,7 @@ export default class TicTacToe extends Game {
         });
 
         if (roundWon) {
-            setTimeout(() => alert(`${this.gameState.currentPlayer} has won!`), 10);
+            alert(`${this.gameState.currentPlayer} has won!`);
             return;
         }
 
@@ -103,7 +105,7 @@ export default class TicTacToe extends Game {
             this.handleCellClick(event);
         }));
         document.querySelector('.game--restart').addEventListener('click', event => {
-            this.handleRestartGame(event);
+            this.handleRestartGame(event); // Call the inherited handleRestartGame method
         });
     }
 }
