@@ -28,8 +28,8 @@ function joinGame() {
     const { gameId, gameType } = getUrlParams(); 
     const userId = Math.random().toString(36).substr(2, 9);
     _dataClient.playerId = userId;
-    _dataClient.joinGame(gameId, userId).then(() => {
-        injectGame(gameId, userId,gameType,_dataClient);
+    _dataClient.joinGame(gameId, userId).then((res) => {
+        injectGame(res.game, gameType,_dataClient);
     }).catch((err) => alert(err));
     
     window.addEventListener('beforeunload', (event) => {
@@ -39,13 +39,14 @@ function joinGame() {
     });
 }
 
-function injectGame(gameId, userId,gameType, dataClient) {
+function injectGame(gameInfo, gameType, dataClient) {
     const link = document.createElement('link');
     import(`../js/games/${gameType}.js`)
         .then(module => {
             const Game = module.default;
+            console.log(dataClient)
             const game = new Game(dataClient);
-            game.renderGame(game);
+            game.renderGame(gameInfo);
         });
     link.rel = 'stylesheet';
     link.href =`../css/${gameType}.css` ;

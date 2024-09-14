@@ -1,7 +1,7 @@
 const redis = require('redis');
 client = redis.createClient({
-    url: process.env.REDIS_URL
-  });
+  url: process.env.REDIS_URL
+});
   
 client.connect();
 
