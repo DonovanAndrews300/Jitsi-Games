@@ -53,23 +53,21 @@ export default class DataClient {
         if (!this.gameState) {
             this.gameState = {};
         }
-
         Object.keys(partialState).forEach((key) => {
             if(Array.isArray(partialState[key])){
                 this.gameState[key] = partialState[key];
             }
             else if (typeof partialState[key] === 'object' && this.gameState[key]) {
                 // For objects like paddles or ball, merge their properties
-                this.gameState[key] = { ...this.gameState[key], ...partialState[key] };
+                this.gameState[key] = {...partialState[key] };
             } else {
                 // For primitive values like scores, simply overwrite them
                 this.gameState[key] = partialState[key];
             }
         });
-console.log("j",this.gameState)
         // After merging, trigger the callback to update the UI
         if (this.onGameStateUpdate) {
-            this.onGameStateUpdate(this.gameState);
+            this.onGameStateUpdate(partialState);
         }
     }
 
