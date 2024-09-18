@@ -182,7 +182,14 @@ export default class DataClient {
             const localVideo = document.getElementById("localVideo");
             this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideo.srcObject = this.localStream;
-
+            let videoTrack = this.localStream.getVideoTracks()[0];
+            localVideo.addEventListener('pause', () => {
+                videoTrack.enabled = false;
+              });
+              
+              localVideo.addEventListener('play', () => {
+                videoTrack.enabled = true;
+              });
             this.setupPeerConnection();
         } catch (error) {
             console.error('Error accessing media devices:', error);
