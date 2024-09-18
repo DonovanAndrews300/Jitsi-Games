@@ -1,3 +1,4 @@
+/* General body styling */
 body {
     background-color: navy;
     color: white;
@@ -8,10 +9,14 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    overflow: hidden; /* Prevents unwanted scrolling */
 }
+
+/* Main container */
 .container {
     text-align: center;
     width: 800px;
+    max-width: 100%; /* Ensures responsive width */
     padding: 30px;
     background-color: #1b1b38;
     border-radius: 15px;
@@ -21,17 +26,22 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+/* Title styling */
 h1 {
     font-size: 2.5em;
     margin-bottom: 20px;
     color: gold;
 }
 
+/* Flexbox for buttons */
 .buttons {
     display: flex;
     justify-content: center;
     margin-top: 45px;
 }
+
+/* Video container with position and size adjustments */
 .video-container {
     position: absolute;
     width: 100%;
@@ -39,36 +49,81 @@ h1 {
     pointer-events: none;
 }
 
+/* Local video with adjustments for responsiveness */
 #localVideo {
     position: absolute;
     bottom: 10px;
     left: 10px;
     width: 20vw;
     height: 15vw;
+    max-width: 300px; /* Ensures a cap for small screens */
+    max-height: 225px;
     background: #2c3e50;
     border: 2px solid gold;
+    border-radius: 8px; /* Slight rounding for aesthetics */
 }
 
+/* Remote video with similar styling */
 #remoteVideo {
     position: absolute;
     top: 10px;
     right: 10px;
     width: 20vw;
     height: 15vw;
+    max-width: 300px;
+    max-height: 225px;
     background: #2c3e50;
     border: 2px solid gold;
+    border-radius: 8px;
 }
+
+/* Button styling with hover effect */
 button {
     padding: 12px 25px;
     font-size: 1.2em;
-    margin: 0px 10px 0px 10px;
+    margin: 0 10px;
     color: white;
     background-color: #008000;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 button:hover {
     background-color: #005700;
+    transform: scale(1.05); /* Slight scaling effect on hover */
+}
+
+/* Responsive layout adjustments */
+@media screen and (max-width: 768px) {
+    #localVideo, #remoteVideo {
+        width: 40vw;
+        height: 30vw;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    button {
+        font-size: 1em;
+        padding: 10px 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #localVideo, #remoteVideo {
+        width: 50vw;
+        height: 35vw;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    button {
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
 }
