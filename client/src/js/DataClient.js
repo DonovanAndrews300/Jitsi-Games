@@ -134,21 +134,28 @@ export default class DataClient {
                 },
                 body: JSON.stringify({ gameId, playerId })
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP error! Status: ${response.status}, message: ${errorText}`);
             }
-
             const result = await response.json();
             this.gameId = gameId;
-            this.initGameState(); // Initialize game state after joining
+            this.initGameState();
+    
             return result;
         } catch (error) {
             console.error('Error joining game:', error);
-            throw error;
+    
+            // Check if the error message contains "Too many players" and redirect
+            if (error.message.includes('Too many players')) {
+                // Redirect to the 'room full' page
+                window.location.href = "/src/pages/fullRoom.html";
+            }
+    
+            throw error; // Optionally re-throw the error if needed for upstream handling
         }
     }
+    
 
     sendGameStateUpdate(gameState) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
