@@ -146,13 +146,11 @@ export default class DataClient {
         } catch (error) {
             console.error('Error joining game:', error);
     
-            // Check if the error message contains "Too many players" and redirect
             if (error.message.includes('Too many players')) {
-                // Redirect to the 'room full' page
                 window.location.href = "/src/pages/fullRoom.html";
             }
     
-            throw error; // Optionally re-throw the error if needed for upstream handling
+            throw error; 
         }
     }
     
