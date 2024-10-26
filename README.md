@@ -6,7 +6,7 @@ Built with:\
 -Express\
 -Redis\
 -Websockets\
--WebRTC(Peer.js)\
+-WebRTC(Peer.js) \
 
 ## Installation
 ```sh
