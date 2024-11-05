@@ -4,13 +4,17 @@ export default class TicTacToe extends Game {
     constructor(dataClient) {
         super(dataClient);
         console.log('Constructing TicTacToe now');
+
+        this._dataClient.onGameStateUpdate = (newGameState) => {
+            this.mergePartialState(newGameState); 
+            this.updateUI(); 
+        };
     }
 
-    // Initialize the TicTacToe-specific game state
     initializeGameState() {
         return {
             game: ['', '', '', '', '', '', '', '', ''],
-            currentPlayer: 'X' 
+            currentPlayer: 'X'
         };
     }
 
@@ -39,11 +43,16 @@ export default class TicTacToe extends Game {
         this.gameState.game[clickedCellIndex] = this.gameState.currentPlayer;
         this.handleResult();
         this.handlePlayerChange();
+
         this.updateGrid();
-        this.saveGameState(); // Call inherited saveGameState to send full game state
+        this.saveGameState({
+            game: this.gameState.game,
+            currentPlayer: this.gameState.currentPlayer
+        });
     }
 
     handlePlayerChange() {
+        // Alternate between players 'X' and 'O'
         this.gameState.currentPlayer = this.gameState.currentPlayer === 'X' ? 'O' : 'X';
     }
 
@@ -69,12 +78,14 @@ export default class TicTacToe extends Game {
         });
 
         if (roundWon) {
-            alert(`${this.gameState.currentPlayer} has won!`);
+            setTimeout(() => alert(`${this.gameState.currentPlayer==="X"? "O": "X"} has won!`), 10);
+            this.saveGameState({ result: `${this.gameState.currentPlayer} wins!` });
             return;
         }
 
         if (roundDraw) {
             setTimeout(() => alert('Draw!'), 10);
+            this.saveGameState({ result: 'Draw!' });
             return;
         }
     }
@@ -104,8 +115,14 @@ export default class TicTacToe extends Game {
         document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', event => {
             this.handleCellClick(event);
         }));
+
         document.querySelector('.game--restart').addEventListener('click', event => {
-            this.handleRestartGame(event); // Call the inherited handleRestartGame method
+            this.handleRestartGame(); // Use inherited method to restart the game
         });
+    }
+
+    handleRestartGame() {
+        super.handleRestartGame(); 
+        this.saveGameState({ game: this.gameState.game, currentPlayer: this.gameState.currentPlayer }); // Broadcast the reset state
     }
 }
