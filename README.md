@@ -1,5 +1,6 @@
 # Jitsi-Games
 An app that allows you to play html games with your friends! \
+**Read the Whole Readme if you wish to contribute!**
 Built with:\
 -Vite\
 -Javascript\
