@@ -1,6 +1,6 @@
 # Jitsi-Games
 An app that allows you to play html games with your friends! \
-**Read the Whole Readme if you wish to contribute!**
+**Read the Whole Readme if you wish to contribute!**\
 Built with:\
 -Vite\
 -Javascript\
@@ -35,7 +35,7 @@ sudo systemctl start redis
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
-6. Understanding the Game Base Class Structure for making new games
+6. Understanding the Game Base Class Structure for making new games:\
     All games made for Jitsi Games must be built off of the 'Game' class. The Game class provides a framework for managing game state and synchronizing it with other players using WebSocket. It includes essential methods that your new game will inherit:
     
     initializeGameState(): Sets up the initial game state for your specific game.
